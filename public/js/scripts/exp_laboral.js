@@ -103,7 +103,7 @@ $(()=>{
         },
     });
 
-    $("input").on("keypress", function () {
+    $("input").on("blur", function () {
         $input=$(this);
         setTimeout(function () {
             $input.val($input.val().toUpperCase());

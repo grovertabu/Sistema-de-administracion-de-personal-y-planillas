@@ -23,18 +23,18 @@
     <div class="card card-info card-outline">
         <div class="card-body sinpadding">
             <div class="table table-bordered table-hover dataTable table-responsive">
-                <table style="width:100%" class="table table-striped table-bordered datatable display nowrap data_table"
+                <table style="width:100%" class="table table-striped table-bordered datatable data_table"
                     id="table_asistencias">
                     <thead>
                         <tr>
                             @if ($tipo_contrato == 1)
-                                <th>ITEM</th>
+                                <th width="15px">ITEM</th>
                             @endif
-                            <th>Trabajador</th>
-                            <th>Cargo</th>
-                            <th>Días laborables</th>
-                            <th>Días trabajados</th>
-                            <th></th>
+                            <th width="250px">Trabajador</th>
+                            <th width="50px">Días laborables</th>
+                            <th width="50px">Días trabajados</th>
+                            <th width="350px">Observacion</th>
+                            <th width="80px"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,10 +43,10 @@
                                 @if ($tipo_contrato == 1)
                                     <td>{{ intval($asistencia->item) }}</td>
                                 @endif
-                                <td>{{ mb_strtoupper($asistencia->nombre_completo) }}</td>
-                                <td>{{ $asistencia->nombre_cargo }}</td>
+                                <td>{{ mb_strtoupper($asistencia->nombre_completo) }} <br> <b>Cargo:</b> {{$asistencia->nombre_cargo}}</td>
                                 <td>{{ $asistencia->dias_laborales }}</td>
                                 <td>{{ $asistencia->dias_asistencia }}</td>
+                                <td>{{ $asistencia->observacion }}</td>
                                 <td>
                                     <a href="{{ route('asistencia.editar', $asistencia->id) }}" title='editar'
                                         class='btn btn-warning btn-icon btn-sm'> <i class="fas fa-edit"></i></a>

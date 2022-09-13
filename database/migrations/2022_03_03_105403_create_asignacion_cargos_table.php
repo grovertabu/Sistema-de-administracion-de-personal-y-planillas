@@ -16,8 +16,10 @@ class CreateAsignacionCargosTable extends Migration
         Schema::create('asignacion_cargos', function (Blueprint $table) {
             $table->id();
             $table->date('fecha_ingreso');
+            $table->date('fecha_nuevo_cargo')->nullable();
             $table->date('fecha_conclusion')->nullable();
-            $table->string('observacion',100)->nullable();
+            $table->string('observacion',150)->nullable();
+            $table->string('motivo_baja',150)->nullable();
             $table->enum('aporte_afp', ['SI', 'NO'])->default('NO');
             $table->enum('sindicato', ['SI', 'NO'])->default('NO');
             $table->enum('socio_fe', ['SI', 'NO'])->default('NO');

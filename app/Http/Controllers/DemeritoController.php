@@ -33,22 +33,16 @@ class DemeritoController extends Controller
                                 Ver documento <i class="fas fa-file-pdf"></i></button> ';
                     $ver_documento= $demerito->file_demerito !='' ? $buton_documento : 'Sin Documento ';
                     $acciones = $ver_documento;
-                    $acciones .='<a title="Eliminar" href="/demerito/'.$demerito->id.'/delete"
-                                class="btn  btn-danger btn-sm btnEliminar"
-                                id="btnEliminar">
-                                <i class="fas fa-trash"></i>
-                                </a>';
+                    $acciones .= '&nbsp;&nbsp;<button type="button" title="Eliminar"
+                    data-ruta="' . route('demerito.delete',$demerito->id) . '"
+                    data-table="table_demeritos"
+                    class="btn btn-danger btn-sm" id="deleteDocumento"><i class="fas fa-trash"></i></button>';
                     return $acciones;
                 })->rawColumns(['action'])
                 ->make(true);
         }
     }
-    public function showModalPdf($id)
-    {
-        $html = 'ID: ' . $id;
 
-        return response()->json(['html' => $html]);
-    }
     public function registrar(Request $request)
     {
         $data = $request->all();
@@ -82,6 +76,7 @@ class DemeritoController extends Controller
             }
         }
     }
+
     public function view_document($id_d)
     {
         $id = decrypt($id_d);
@@ -98,5 +93,19 @@ class DemeritoController extends Controller
             'Content-Transfer-Encoding' => 'binary',
             'Accept-Ranges' => 'bytes'
         ]);
+    }
+
+    public function delete($id)
+    {
+        $demerito = Demerito::find($id);
+        if ($demerito->file_demerito != '') {
+            Storage::disk('local')->delete($demerito->file_demerito);
+        }
+        $query = $demerito->delete();
+        if ($query) {
+            return response()->json(['success' => true, 'message' => 'Documento eliminado exitosamente']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Algo salio Mal']);
+        }
     }
 }

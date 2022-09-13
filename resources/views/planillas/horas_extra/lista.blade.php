@@ -30,7 +30,8 @@
                     id="table_horas_extras">
                     <thead>
                         <tr>
-                            <th>No</th>
+                            <th>Nro</th>
+                            <th>Item</th>
                             <th>Trabajador</th>
                             <th>Cargo</th>
                             <th>Tipo hora extra</th>
@@ -42,8 +43,9 @@
                     <tbody>
                         @foreach ($lista_horas_extra as $horas_extra)
                             <tr>
+                                <td>{{$i++}}</td>
                                 @if ($tipo_contrato == 1)
-                                    <td>{{ intval($horas_extra->item) }}</td>
+                                    <td>{{intval($horas_extra->item)}}</td>
                                 @endif
                                 <td>{{ mb_strtoupper($horas_extra->nombre_completo) }}</td>
                                 <td>{{ $horas_extra->nombre_cargo }}</td>

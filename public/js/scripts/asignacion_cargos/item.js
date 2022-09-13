@@ -168,12 +168,10 @@ $(() => {
             },
             error:function(response, status, xhr) {
                 Swal.fire({
-                    title: status,
+                    title: response.message,
                     icon: 'warning',
                     confirmButtonText: 'Aceptar',
-                }).then(() => {
-                    location.reload();
-                });
+                })
             }
         });
     });
@@ -183,6 +181,7 @@ $(() => {
         // var _token = $('input[name=_token]').val();
         var data = {
             'fecha_conclusion': $('#fecha_conclusion').val(),
+            'motivo_baja': $('#motivo_baja').val(),
         }
         $.ajaxSetup({
             headers: {

@@ -1,5 +1,5 @@
 $(()=>{
-    $("input").on("keypress", function () {
+    $("input").on("blur", function () {
         $input=$(this);
         setTimeout(function () {
             $input.val($input.val().toUpperCase());
@@ -21,12 +21,16 @@ $(()=>{
         $('.modal_formacion_academica').modal("show");
         // $(".modal-title").text("FORMACIÓN ACADEMICA");
         // $(".modal-header").css("background-color", "#ffff");
+        institucion = $(this).data('institucion');
+        console.log(institucion);
         id = $(this).data('id');
-        html='<div class="col-12 justify-content-center row">'+
-            '<iframe src="/formacion_academica/documento/'+id+'"'+
-                'width="1200" height="420">'+
-            '</iframe>'+
-            '</div>';
+        urlFormacionAcademica = urlFormacionAcademica.replace(':id', id);
+        html=`<div class="col-12 row">
+            <p><b>Institución: </b> ${institucion}</p>
+            <iframe src="${urlFormacionAcademica}"
+                width="1200" height="420">
+            </iframe>
+            </div>`;
         $('#ContenidoFormacionAcademica').html(html);
     });
     // REGISTRAR UN TRABAJADOR
@@ -111,6 +115,8 @@ $(()=>{
         //     $(element).addClass('is-valid');
         // }
     });
+
+
 });
 
 

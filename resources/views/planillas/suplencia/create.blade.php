@@ -53,7 +53,7 @@
                         <x-dg-select2 id="id_cargo_suplencia" name="id_cargo_suplencia" label="Cargo suplencia" topclass="col-sm-6 required">
                             <option value="">-seleccione-</option>
                             @foreach($suplencias as $suplencia)
-                                <option value="{{$suplencia->id_cargo}}" {{ old('id_cargo_suplencia') == $suplencia->id_cargo ? 'selected' : '' }}>{{$suplencia->nombre_cargo}}</option>
+                                <option value="{{$suplencia->id_cargo}}" {{ old('id_cargo_suplencia') == $suplencia->id_cargo ? 'selected' : '' }}>{{$suplencia->item .' - '. $suplencia->nombre_cargo.' - '.Funciones::formatMoney($suplencia->salario_mensual)}}</option>
                             @endforeach
                         </x-dg-select2>
                         {{-- rango de tiempo de una suplencia --}}

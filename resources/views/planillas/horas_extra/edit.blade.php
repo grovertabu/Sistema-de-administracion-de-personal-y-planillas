@@ -21,7 +21,7 @@
                         <x-input type="text" readonly=true name="tipo_hora_extra" id="tipo_hora_extra" label="Tipo de hora extra"
                             topclass="col-md-12 required" value="{{ old('tipo_hora_extra', $horas_extra->tipo_hora_extra) }}" />
                         {{-- Componente de Dias de horas_extra --}}
-                        <x-input type="number" name="cantidad" id="cantidad" label="Cantidad Horas" min="0"
+                        <x-input type="text" name="cantidad" id="cantidad" label="Cantidad Horas" inputclass="decimales"
                             topclass="col-md-12 required" value="{{ old('cantidad', $horas_extra->cantidad) }}" />
                     </div>
                     <div class="card-footer">

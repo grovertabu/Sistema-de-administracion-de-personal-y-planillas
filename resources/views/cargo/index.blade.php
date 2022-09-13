@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Cargo')
+@section('title', 'Cargos')
 
 @section('content_header')
 <h1>ELAPAS - CARGOS

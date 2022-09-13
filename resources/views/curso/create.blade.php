@@ -13,13 +13,13 @@
                     @csrf
                     <div class="row">
                         <input type="hidden" name="trabajador_id" id="trabajador_id" value="{{$trabajador->id}}">
-                        <x-dg-input type="text" name="nombre_curso" id="nombre_curso"
+                        <x-input type="text" name="nombre_curso" id="nombre_curso" inputclass="text-uppercase"
                             label="Nombre del Curso" topclass="col-md-12 required"
                             placeholder="Ejemplo: Desarrollo web"/>
-                        <x-dg-input type="text" name="instituto" id="instituto"
+                        <x-input type="text" name="instituto" id="instituto" inputclass="text-uppercase"
                             label="Institución" topclass="col-md-12 required"
                             placeholder="Ejemplo: Udemy"/>
-                        <x-dg-input type="number" name="horas_academicas" id="horas_academicas"
+                        <x-input type="number" name="horas_academicas" id="horas_academicas"
                             label="Horas Academicas"  topclass="col-md-6 required"  />
                         <x-date-icon id="fecha_curso"  name="fecha_curso"
                             label="Fecha de conclusión" topclass="col-md-6 required" />

@@ -57,8 +57,8 @@
                             @endforeach
                         </x-dg-select>
                         {{-- Componente de Dias de hora_extra --}}
-                        <x-input type="number" name="cantidad" id="cantidad" label="Cantidad Horas" min="0"
-                            topclass="col-md-12 required" value="{{ old('cantidad') }}" />
+                        <x-input type="text" name="cantidad" id="cantidad" label="Cantidad Horas"
+                            topclass="col-md-12 required" value="{{ old('cantidad') }}" inputclass="decimales"/>
                         <input type="hidden" name="tipo_contrato" id="tipo_contrato" value="{{ $tipo_contrato }}">
                     </div>
                     <div class="card-footer">

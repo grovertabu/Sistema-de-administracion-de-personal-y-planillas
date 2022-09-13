@@ -32,28 +32,30 @@
                                         <label for="expedido">Expedido</label>
                                         <select class="form-control form-control-sm" style="width:100%" id="expedido" name="expedido" >
                                             <option value="">--SELECCIONE--</option>
-                                            <option value="CH">Chuquisaca</option>
-                                            <option value="LP">La Paz</option>
-                                            <option value="CB">Cochabamba</option>
-                                            <option value="OR">Oruro</option>
-                                            <option value="PT">Potosí</option>
-                                            <option value="TJ">Tarija</option>
-                                            <option value="SC">Santa Cruz</option>
-                                            <option value="BE">Beni</option>
-                                            <option value="PD">Pando</option>
+                                            <option value="CH">CHUQUISACA</option>
+                                            <option value="LP">LA PAZ</option>
+                                            <option value="CB">COCHABAMBA</option>
+                                            <option value="OR">ORURO</option>
+                                            <option value="PT">POTOSí</option>
+                                            <option value="TJ">TARIJA</option>
+                                            <option value="SC">SANTA CRUZ</option>
+                                            <option value="BE">BENI</option>
+                                            <option value="PD">PANDO</option>
                                         </select>
                                     </div>
                                     <x-input-icon type="text" name="nombre_trabajador" id="nombre_trabajador"
-                                        label="Nombre" topclass="col-md-6 text-uppercase required"
-                                        icon="fas fa-user" inputclass="form-control-sm mayus"/>
+                                        label="Nombre" topclass="col-md-6 required"
+                                        icon="fas fa-user" inputclass="form-control-sm text-uppercase"/>
+
                                     <x-input-icon type="text" name="apellido_paterno" id="apellido_paterno"
                                         label="Apellido Paterno" topclass="col-md-6 required"
-                                        icon="fas fa-user" inputclass="form-control-sm mayus"/>
+                                        icon="fas fa-user" inputclass="form-control-sm text-uppercase"/>
                                     <x-input-icon type="text" name="apellido_materno" id="apellido_materno"
                                         label="Apellido Materno" topclass="col-md-6"
-                                        icon="fas fa-user" inputclass="form-control-sm mayus"/>
+                                        icon="fas fa-user" inputclass="form-control-sm text-uppercase"/>
+
                                     <x-input type="text" name="direccion" id="direccion" label="Direccion"
-                                        topclass="col-md-6 required" inputclass="form-control-sm"/>
+                                        topclass="col-md-6 required" inputclass="form-control-sm text-uppercase"/>
                                     <x-input type="text" name="nro_asegurado" id="nro_asegurado"
                                         label="Nro. Asegurado" inputclass="form-control-sm" topclass="col-md-6 required" />
                                     <div class="form-group col-md-6 required">
@@ -73,13 +75,13 @@
                                     <div class="form-group col-md-6 required">
                                         <label>Sexo</label>
                                         <select class="form-control form-control-sm" id="sexo" name="sexo">
-                                            <option value="">--Seleccione--</option>
-                                            <option value="M">Masculino</option>
-                                            <option value="F">Femenino</option>
+                                            <option value="">--SELECCIONE--</option>
+                                            <option value="M">MASCULINO</option>
+                                            <option value="F">FEMENINO</option>
                                         </select>
                                     </div>
                                     <x-input type="text" name="tipo_sangre" id="tipo_sangre"
-                                        label="Tipo de Sangre" inputclass="form-control-sm" topclass="col-md-6" />
+                                        label="Tipo de Sangre" inputclass="form-control-sm text-uppercase" topclass="col-md-6" />
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="info_laboral" role="tabpanel">
@@ -89,11 +91,11 @@
                                     <div class="form-group col-md-6 required">
                                         <label>Estado Civil</label>
                                         <select class="form-control form-control-sm" id="estado_civil" name="estado_civil">
-                                            <option value="NONE">Sin Especificar</option>
-                                            <option value="SINGLE">Soltero(a)</option>
-                                            <option value="MARRIED">Casado(a)</option>
-                                            <option value="WIDOWER">Viudo(a)</option>
-                                            <option value="DIVORCED">Divorciado(a)</option>
+                                            <option value="NONE">SIN ESPECIFICAR</option>
+                                            <option value="SINGLE">SOLTERO(A)</option>
+                                            <option value="MARRIED">CASADO(A)</option>
+                                            <option value="WIDOWER">VIUDO(A)</option>
+                                            <option value="DIVORCED">DIVORCIADO(A)</option>
                                         </select>
                                     </div>
                                     <x-input type="number" name="antiguedad_anios" id="antiguedad_anios"
@@ -103,9 +105,11 @@
                                     <x-input type="number" name="antiguedad_dias" id="antiguedad_dias"
                                         label="Días de Antiguedad" topclass="col-md-4 required" inputclass="form-control-sm"/>
                                     <x-input type="text" name="telefono" id="telefono"
-                                        label="Teléfono" topclass="col-md-6" inputclass="form-control-sm"/>
+                                        label="Teléfono" topclass="col-md-3" inputclass="form-control-sm"/>
                                     <x-input type="text" name="celular" id="celular"
-                                        label="Celular" topclass="col-md-6" inputclass="form-control-sm"/>
+                                        label="Celular" topclass="col-md-3" inputclass="form-control-sm"/>
+                                    <x-input type="text" name="profesion" id="profesion"
+                                        label="Profesión u oficio" topclass="col-md-6" inputclass="form-control-sm"/>
                                 </div>
                             </div>
                         </div>

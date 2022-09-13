@@ -12,8 +12,10 @@ class AsignacionCargo extends Model
     protected $fillable = [
         'id',
         'fecha_ingreso',
+        'fecha_nuevo_cargo',
         'fecha_conclusion',
         'observacion',
+        'motivo_baja',
         'aporte_afp',
         'sindicato',
         'socio_fe',
@@ -23,19 +25,24 @@ class AsignacionCargo extends Model
     ];
     protected $casts = [
         'fecha_ingreso' => 'date:d-m-Y',
+        'fecha_nuevo_cargo' => 'date:d-m-Y',
         'fecha_conclusion' => 'date:d-m-Y',
     ];
 
     public function getData($tipo_contrato_id){
-        $asignacion_cargo = static::select('id',
-            'fecha_ingreso',
-            'fecha_conclusion',
-            'aporte_afp',
-            'sindicato',
-            'socio_fe',
-            'trabajador_id',
-            'nomina_cargo_id',
-            'estado')
+        $asignacion_cargo = static::select('asignacion_cargos.id',
+            'asignacion_cargos.fecha_ingreso',
+            'asignacion_cargos.fecha_nuevo_cargo',
+            'asignacion_cargos.fecha_conclusion',
+            'asignacion_cargos.aporte_afp',
+            'asignacion_cargos.sindicato',
+            'asignacion_cargos.socio_fe',
+            'asignacion_cargos.trabajador_id',
+            'asignacion_cargos.nomina_cargo_id',
+            'asignacion_cargos.estado',
+            'nc.item as item',
+            )
+            ->join('nomina_cargos as nc','nc.id','asignacion_cargos.nomina_cargo_id')
             ->with(['trabajador' => function($query){
                 $query->select('id','ci','nombre','apellido_paterno','apellido_materno');
             }])
@@ -51,7 +58,7 @@ class AsignacionCargo extends Model
             ])
             ->whereHas('nomina_cargo', function ($query) use ($tipo_contrato_id) {
                 $query->where('tipo_contrato_id', '=', $tipo_contrato_id);
-            })->orderBy('estado','asc');
+            })->orderBy('nc.item','asc');
         return $asignacion_cargo;
     }
 
@@ -88,6 +95,26 @@ class AsignacionCargo extends Model
     public function planilla_total_ganados()
     {
         return $this->hasMany(PlanillaTotalGanado::class);
+    }
+
+    public function planilla_aporte_laborals()
+    {
+        return $this->hasMany(PlanillaAporteLaboral::class);
+    }
+
+    public function planilla_impositivas()
+    {
+        return $this->hasMany(PlanillaImpositiva::class);
+    }
+
+    public function planilla_otro_descuentos()
+    {
+        return $this->hasMany(PlanillaOtroDescuento::class);
+    }
+
+    public function planilla_descuentos()
+    {
+        return $this->hasMany(PlanillaDescuento::class);
     }
 
     protected function serializeDate(DateTimeInterface $date)

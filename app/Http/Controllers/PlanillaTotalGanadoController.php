@@ -363,51 +363,79 @@ class PlanillaTotalGanadoController extends Controller
     public function planilla_pdf($mes, $gestion, $tipo_contrato)
     {
         $nomina_cargos = DB::table('nomina_cargos as nc')
-            ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id', 'nc.id')
             ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
             ->join('cargos as c', 'c.id', 'nc.cargo_id')
             ->select(
+                'nc.id as id_cargo',
                 'u.seccion',
                 'c.nombre as nombre_cargo',
                 'nc.item as item',
-                'ac.estado as estado_asignacion'
+                'nc.estado as estado_cargo'
             )
             ->orderBy('nc.item')->get();
+
+        $asistencias = DB::table('planilla_asistencias')->where([
+            ['mes', '=', $mes],
+            ['gestion', '=', $gestion],
+            ['tipo_contrato', '=', $tipo_contrato],
+        ])->get();
+
+        $ids_asistencias = $asistencias->pluck('asignacion_cargo_id')->toArray();
         foreach ($nomina_cargos as $cargo) {
-            if ($cargo->estado_asignacion == 'HABILITADO') {
-                $total_ganados = DB::table('nomina_cargos as nc')
-                    ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id', 'nc.id')
-                    ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
-                    ->join('cargos as c', 'c.id', 'nc.cargo_id')
-                    ->join('trabajadors as t', 't.id', 'ac.trabajador_id')
-                    ->join('planilla_total_ganados as tg', 'tg.asignacion_cargo_id', 'ac.id')
-                    ->where([
-                        ['tg.mes', '=', $mes],
-                        ['tg.gestion', '=', $gestion],
-                        ['tg.tipo_contrato', '=', $tipo_contrato],
-                        ['nc.item', '=', $cargo->item],
-                        ['u.seccion', '=', $cargo->seccion],
-                    ])
-                    ->select(
-                        'nc.item as item',
-                        DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
-                        'c.nombre as cargo',
-                        'tg.mes as mes',
-                        'tg.gestion as gestion',
-                        'tg.tipo_contrato as tipo_contrato',
-                        'tg.total_dias as total_dias',
-                        'tg.haber_mensual as haber_mensual',
-                        'tg.haber_basico as haber_basico',
-                        'tg.bono_antiguedad as bono_antiguedad',
-                        'tg.horas_extra as horas_extra',
-                        'tg.monto_horas_extra as monto_horas_extra',
-                        'tg.suplencia as suplencia',
-                        'tg.total_ganado as total_ganado',
-                    )
-                    ->orderBy('nc.item')->first();
-                // de esta manera agrego las total_ganados de un trabajador al item respectivo
-                $cargo->datos = $total_ganados;
+            $cargo_id = $cargo->id_cargo;
+            $search_cargo = DB::table('asignacion_cargos')
+            ->join('planilla_asistencias', 'planilla_asistencias.asignacion_cargo_id','asignacion_cargos.id')
+            ->where([
+                ['mes', '=', $mes],
+                ['gestion', '=', $gestion],
+                ['tipo_contrato', '=', $tipo_contrato],
+            ])
+            ->whereIn('asignacion_cargos.nomina_cargo_id', function ($query) use ($cargo_id)  {
+                $query->select('id')->from('nomina_cargos')->where('id', $cargo_id);
+            })->first();
+
+            if(!empty($search_cargo)){
+                if (in_array($search_cargo->asignacion_cargo_id, $ids_asistencias)) {
+                    $total_ganados = DB::table('nomina_cargos as nc')
+                        ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id', 'nc.id')
+                        ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
+                        ->join('cargos as c', 'c.id', 'nc.cargo_id')
+                        ->join('trabajadors as t', 't.id', 'ac.trabajador_id')
+                        ->join('planilla_total_ganados as tg', 'tg.asignacion_cargo_id', 'ac.id')
+                        ->where([
+                            ['tg.mes', '=', $mes],
+                            ['tg.gestion', '=', $gestion],
+                            ['tg.tipo_contrato', '=', $tipo_contrato],
+                            ['nc.item', '=', $cargo->item],
+                            ['u.seccion', '=', $cargo->seccion],
+                        ])
+                        ->select(
+                            'nc.item as item',
+                            DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
+                            'c.nombre as cargo',
+                            'tg.mes as mes',
+                            'tg.gestion as gestion',
+                            'tg.tipo_contrato as tipo_contrato',
+                            'tg.total_dias as total_dias',
+                            'tg.haber_mensual as haber_mensual',
+                            'tg.haber_basico as haber_basico',
+                            'tg.bono_antiguedad as bono_antiguedad',
+                            'tg.horas_extra as horas_extra',
+                            'tg.monto_horas_extra as monto_horas_extra',
+                            'tg.suplencia as suplencia',
+                            'tg.total_ganado as total_ganado',
+                        )
+                        ->orderBy('nc.item')->first();
+                    // de esta manera agrego las total_ganados de un trabajador al item respectivo
+                    $cargo->datos = $total_ganados;
+                } else {
+                    $cargo->datos = [];
+                }
+            }else {
+                $cargo->datos = [];
             }
+
+
         }
         // return $cargos;
 

@@ -7,7 +7,47 @@ $(()=>{
         responsive: true,
         language: {
             url:"../../vendor/funciones/datatable_spanish.json"
-        }
+        },
+        dom: "<'row'<'col-sm-6'Bl><'col-sm-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        buttons: [
+            {
+                extend: 'print',
+                footer: true,
+                text: '<i class="fas fa-print" data-toggle="tooltip" title="Imprimir todas las paginas">Imprimir</i>',
+                className: 'btn btn-sm btn-danger',
+                exportOptions: {
+                    modifier: {
+                        order: 'applied',
+                        page: 'all',
+                        search: 'applied'
+                    },
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                },
+                customize: function (win) {
+                    $(win.document.body).find('table')
+                        .addClass('compact').attr('border', '1')
+                        .css({ "font-size": "inherit" })
+                    $(win.document.body).find('h1').css('text-align', 'center');
+                    $(win.document.body).find('table').addClass('printer')
+                },
+            },
+            {
+                extend: 'excelHtml5',
+                footer: true,
+                text: '<i class="fas fa-file-excel" data-toggle="tooltip" title="Hoja de Excel Todas las páginas">Exportar</i>',
+                className: 'btn btn-sm btn-success',
+                exportOptions: {
+                    modifier: {
+                        order: 'applied',
+                        page: 'all',
+                        search: 'applied'
+                    },
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            }
+        ],
     });
 
     $(document).on('click','#btnBorrarEscala', function(){

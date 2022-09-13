@@ -20,6 +20,7 @@ class CreatePlanillaAsistenciasTable extends Migration
             $table->integer('tipo_contrato');
             $table->integer('dias_asistencia');
             $table->integer('dias_laborales');
+            $table->string('observacion',250)->nullable();
             $table->unsignedBigInteger('asignacion_cargo_id');
             $table->timestamps();
             $table->foreign('asignacion_cargo_id')

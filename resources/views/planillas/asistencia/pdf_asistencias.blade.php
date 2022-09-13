@@ -42,7 +42,7 @@ foreach ($cargos as $key => $cargo) {
         $pdf->SetFont('dejavusans', '', 6);
         $pdf->SetFillColor(220, 220, 220);
         $pdf->MultiCell(15, 6, $asistencia->item, 1, 'C', 0, '', '', '', 1, '', '', '', 6, 'M');
-        if($asistencia->estado_asignacion == "HABILITADO"){
+        if (!empty($asistencia->datos)) {
             // dd($asistencia->datos->nombre_completo);
             $h_cargo = ceil($pdf->getStringHeight(35, trim($asistencia->datos->cargo), $reseth = true, $autopadding = true, $border = 1));
             $h = max(array($h_cargo)) + 2;
@@ -52,7 +52,7 @@ foreach ($cargos as $key => $cargo) {
             $pdf->MultiCell(35, 6, $asistencia->datos->dias_laborales, 1, 'C', 0, 1, '', '', 1, '', '', '', 6, 'M');
         }
         else {
-            $pdf->MultiCell(179, 6, 'ACEFALIA', 1, 'C', 0, 1, '', '', 1, '', '', '', 6, 'M');
+            $pdf->MultiCell(179, 6, 'ACEFALIA (CARGO: '.$asistencia->nombre_cargo.')', 1, 'C', 0, 1, '', '', 1, '', '', '', 6, 'M');
         }
     }
 }

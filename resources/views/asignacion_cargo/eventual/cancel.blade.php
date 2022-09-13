@@ -51,6 +51,12 @@
                             </div>
                         </div>
                         <hr style="width: 100%; background-color: rgb(194, 194, 194); height: 0.05px; border-color : transparent;" />
+                        <div class="form-group col-md-12">
+                            <label>Motivo de la baja:</label>
+                            <div class="input-group required-valid">
+                                <textarea class="form-control" name="motivo_baja" id="motivo_baja" cols="15" rows="2"></textarea>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer modal_font_size">
                         <div class="row">

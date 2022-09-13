@@ -3,13 +3,12 @@
 </div>
 <input type="hidden" id="route_listar_formacion" value="{{route('form_academica.listar',$trabajador->id)}}">
 <div class="table table-bordered table-hover dataTable table-responsive">
-    <table class="table table-bordered datatable display nowrap data_table" id="table_formacion">
+    <table class="table table-bordered datatable table-striped display nowrap data_table" id="table_formacion">
         <thead>
             <tr>
                 <th>N°</th>
                 <th>Titulo Obtenido</th>
                 <th>Nivel</th>
-                <th>Institución</th>
                 <th>Fecha de emisión</th>
                 <th>Lugar</th>
                 <th></th>

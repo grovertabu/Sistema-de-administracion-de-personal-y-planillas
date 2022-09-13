@@ -22,19 +22,7 @@
         <div class="justify-content-center row" style="height:250px;width:100%">
             <form class="form-inline" action="{{ route('horas_extra.lista') }}" method="GET">
                 {{-- @csrf --}}
-                <div class="form-group mx-sm-3 ">
-                    <label for="inputPassword2" class="mr-1">Tipo de contrato: </label>
-                    <select class="form-control @error('tipo_contrato') is-invalid @enderror"
-                        name="tipo_contrato" id="tipo_contrato" readonly>
-                        <option value="">-seleccione-</option>
-                        @foreach ($tipo_contratos as $t_contrato)
-                            <option value="{{ $t_contrato->id }}"
-                                {{ old('tipo_contrato',1) == $t_contrato->id ? 'selected' : '' }}>
-                                {{ $t_contrato->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <input type="hidden" name="tipo_contrato" id="tipo_contrato" value="1">
                 <div class="form-group mx-sm-3 ">
                     <label for="inputPassword2" class="mr-1">Mes: </label>
                     <select class="form-control select2 @error('mes') is-invalid @enderror" name="mes" id="mes">

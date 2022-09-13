@@ -16,7 +16,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'1',
             'cargo_id'=>'1',
             'escala_salarial_id'=>'1',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'2',
@@ -296,7 +296,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'4',
             'cargo_id'=>'36',
             'escala_salarial_id'=>'9',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'37',
@@ -432,7 +432,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'5',
             'cargo_id'=>'53',
             'escala_salarial_id'=>'3',
-            'estado'=>'LIBRE',
+            'estado'=>'OCUPADO',
         ]);
         NominaCargo::create([
             'item'=>'54',
@@ -448,7 +448,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'5',
             'cargo_id'=>'55',
             'escala_salarial_id'=>'4',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'56',
@@ -576,7 +576,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'7',
             'cargo_id'=>'71',
             'escala_salarial_id'=>'7',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'72',
@@ -688,7 +688,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'7',
             'cargo_id'=>'85',
             'escala_salarial_id'=>'10',
-            'estado'=>'LIBRE',
+            'estado'=>'OCUPADO',
         ]);
         NominaCargo::create([
             'item'=>'86',
@@ -712,7 +712,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'7',
             'cargo_id'=>'88',
             'escala_salarial_id'=>'10',
-            'estado'=>'LIBRE',
+            'estado'=>'OCUPADO',
         ]);
         NominaCargo::create([
             'item'=>'89',
@@ -944,7 +944,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'9',
             'cargo_id'=>'117',
             'escala_salarial_id'=>'10',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'118',
@@ -1008,7 +1008,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'9',
             'cargo_id'=>'125',
             'escala_salarial_id'=>'10',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
 
         NominaCargo::create([
@@ -1106,7 +1106,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'11',
             'cargo_id'=>'137',
             'escala_salarial_id'=>'7',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'138',
@@ -1178,7 +1178,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'11',
             'cargo_id'=>'146',
             'escala_salarial_id'=>'6',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'147',
@@ -1474,7 +1474,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'12',
             'cargo_id'=>'183',
             'escala_salarial_id'=>'8',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'184',
@@ -1586,7 +1586,7 @@ class NominaCargoSeeder extends Seeder
             'unidad_organizacional_id'=>'12',
             'cargo_id'=>'197',
             'escala_salarial_id'=>'8',
-            'estado'=>'OCUPADO',
+            'estado'=>'LIBRE',
         ]);
         NominaCargo::create([
             'item'=>'198',

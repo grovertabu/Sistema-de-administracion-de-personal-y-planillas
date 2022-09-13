@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'NOMINA DE Cargo')
+@section('title', 'Nomina de cargos')
 
 @section('content_header')
 <h1>NOMINA DE CARGOS

@@ -28,23 +28,21 @@ class CursoController extends Controller
             )->where('trabajador_id', $id)->get();
             return DataTables::of($curso)
                 ->addColumn('action', function ($curso) {
-                    $acciones = '<button type="button"
-                    id="ViewModalCurso"
-                    data-id="' . encrypt($curso->id) . '"
-                    title="Ver Documento del curso" class="btn btn-primary btn-xs">
-                    Ver Documento <i class="fas fa-file-pdf"></i></button>';
-                    $acciones .= '';
-                    // $acciones .='<a title="Eliminar" href="/curso/'.$curso->id.'/delete" class="btn  btn-danger btn-sm btnEliminar" id="btnEliminar"><i class="fas fa-trash"></i></a>';
+                    $buton_documento='<button type="button"
+                                id="ViewModalCurso"
+                                data-id="' . encrypt($curso->id) . '"
+                                title="Ver documento" class="btn btn-primary btn-xs">
+                                Ver documento <i class="fas fa-file-pdf"></i></button> ';
+                    $ver_documento= $curso->file_curso !='' ? $buton_documento : 'Sin Documento ';
+                    $acciones = $ver_documento;
+                    $acciones .= '&nbsp;&nbsp;<button type="button" title="Eliminar"
+                    data-ruta="' . route('curso.delete',$curso->id) . '"
+                    data-table="table_cursos"
+                    class="btn btn-danger btn-sm" id="deleteDocumento"><i class="fas fa-trash"></i></button>';
                     return $acciones;
                 })->rawColumns(['action'])
                 ->make(true);
         }
-    }
-    public function showModalPdf($id)
-    {
-        $html = 'ID: ' . $id;
-
-        return response()->json(['html' => $html]);
     }
     public function registrar(Request $request)
     {
@@ -97,11 +95,19 @@ class CursoController extends Controller
         $response = Response::make($file, 200);
         $response->header("Content-Type", $type);
         return $response;
-        // $content = file_get_contents(storage_path('app/private/curso/'.$file));
+    }
 
-        // return Response($content, 200, [
-        //     'Content-Type' => 'application/pdf',
-        //     'Content-Disposition' => "inline; filename=\"$file\""
-        // ]);
+    public function delete($id)
+    {
+        $curso = Curso::find($id);
+        if ($curso->file_curso != '') {
+            Storage::disk('local')->delete($curso->file_curso);
+        }
+        $query = $curso->delete();
+        if ($query) {
+            return response()->json(['success' => true, 'message' => 'Documento eliminado exitosamente']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Algo salio Mal']);
+        }
     }
 }

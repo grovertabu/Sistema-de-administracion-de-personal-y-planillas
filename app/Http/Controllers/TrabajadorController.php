@@ -74,6 +74,7 @@ class TrabajadorController extends Controller
             $trabajador->direccion = $request->direccion;
             $trabajador->tipo_sangre = $request->tipo_sangre;
             $trabajador->celular = $request->celular;
+            $trabajador->profesion = $request->profesion;
             $trabajador->telefono = $request->telefono;
             $trabajador->estado_civil = $request->estado_civil;
             $trabajador->sexo = $request->sexo;
@@ -139,6 +140,7 @@ class TrabajadorController extends Controller
             $trabajador->direccion = $request->direccion;
             $trabajador->tipo_sangre = $request->tipo_sangre;
             $trabajador->celular = $request->celular;
+            $trabajador->profesion = $request->profesion;
             $trabajador->telefono = $request->telefono;
             $trabajador->estado_civil = $request->estado_civil;
             $trabajador->sexo = $request->sexo;
@@ -147,7 +149,8 @@ class TrabajadorController extends Controller
             $trabajador->antiguedad_anios = $request->antiguedad_anios;
             $trabajador->antiguedad_meses = $request->antiguedad_meses;
             $trabajador->antiguedad_dias = $request->antiguedad_dias;
-            $trabajador->estado_trabajador = $request->estado_trabajador == 'on' ? 'HABILITADO' : 'INHABILITADO';
+            $trabajador->estado_trabajador = $request->estado_trabajador != '' ? 'HABILITADO' : 'INHABILITADO';
+            // return $request->estado_trabajador;
             if ($request->hasFile('foto')) {
                 if ($trabajador->foto != '') {
                     Storage::disk('local')->delete('private/avatars/' . $trabajador->foto);
@@ -162,7 +165,7 @@ class TrabajadorController extends Controller
             if (!$query) {
                 return response()->json(['code' => 0, 'msg' => 'Algo salio Mal']);
             } else {
-                return response()->json(['code' => 1, 'msg' => 'Nuevo trabajador registrado']);
+                return response()->json(['code' => 1, 'msg' => 'Registro de trabajador modificado']);
             }
         }
     }
@@ -186,13 +189,23 @@ class TrabajadorController extends Controller
     public function destroy($id)
     {
         $trabajador = Trabajador::find($id);
+
+        $mensajeF = ($trabajador->formacion_academicas->count() > 0) ? 'Tiene documentos de formación académica relacionados.<br>' : '';
+        $mensajeP = ($trabajador->documentos_personales->count() > 0) ? 'Tiene documentos personales relacionados.<br>' : '';
+        $mensajeC = ($trabajador->cursos->count() > 0) ? 'Tiene documentos de cursos relacionados.<br>' : '';
+        $mensajeExp = ($trabajador->exp_laborals->count() > 0) ? 'Tiene documentos de experiencia_laboral relacionados.<br>' : '';
+        $mensajeM = ($trabajador->meritos->count() > 0) ? 'Tiene documentos de meritos relacionados.<br>' : '';
+        $mensajeD = ($trabajador->demeritos->count() > 0) ? 'Tiene documentos de demeritos relacionados.<br>' : '';
+        $mensajeAC = ($trabajador->asignacion_cargo->count() > 0) ? 'Tiene una asignacion de cargo relacionado.<br>' : '';
         if (
-            $trabajador->formacion_academicas->count() < 1 &&
-            $trabajador->documentos_personales->count() < 1 &&
-            $trabajador->cursos->count() < 1 &&
-            $trabajador->exp_laborals->count() < 1 &&
-            $trabajador->meritos->count() < 1 &&
-            $trabajador->demeritos->count() < 1
+            $trabajador &&
+            empty($mensajeF) &&
+            empty($mensajeP) &&
+            empty($mensajeC) &&
+            empty($mensajeExp) &&
+            empty($mensajeM) &&
+            empty($mensajeD) &&
+            empty($mensajeAC)
         ) {
             if ($trabajador->foto != '') {
                 Storage::disk('local')->delete('private/avatars/' . $trabajador->foto);
@@ -202,12 +215,27 @@ class TrabajadorController extends Controller
                 'message'=>"Trabajador Con CI: $trabajador->ci eliminado exitosamente. "],200);
         }
         return response()->json(['success'=>false,
-        'message'=>"El trabajador con CI: $trabajador->ci no se pudo eliminar. Tiene Registros relacionados "],404);
+        'message'=>"El trabajador $trabajador->nombre con CI: $trabajador->ci no se pudo eliminar. <br>
+         ".$mensajeF
+          .$mensajeP
+          .$mensajeC
+          .$mensajeExp
+          .$mensajeM
+          .$mensajeD
+          .$mensajeAC
+        ],404);
     }
-
     public function pdf_ficha_personal($id){
-        $trabajador = Trabajador::findOrFail($id);
-        $usuario =auth()->user()->name;
+        $trabajador = Trabajador::with(['formacion_academicas' => function($query){
+            $query->select('id','nivel_formacion','institucion','titulo_formacion','lugar_formacion','fecha_emision','trabajador_id')
+            ->where('nivel_formacion','PROFESIONAL');
+        }])
+        ->with(['asignacion_cargo' => function($query){
+            $query->select('id','fecha_ingreso','observacion','trabajador_id','nomina_cargo_id','estado')
+            ->where('estado','HABILITADO');
+        }])
+        ->findOrFail($id);
+        $usuario =auth()->user()->roles[0]->name;
         // return $trabajador;
         return response(view('trabajador.print.ficha_personal',compact('trabajador','usuario')))
         ->header('Content-Type', 'application/pdf');

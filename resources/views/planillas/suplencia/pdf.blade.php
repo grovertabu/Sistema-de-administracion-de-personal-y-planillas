@@ -1,7 +1,7 @@
 <?php
 use App\Utils\Pdf;
 
-$pdf = new Pdf('PLANILLA DE HORAS EXTRAS', 'Periodo ' . $mes . '/' . $gestion, 'RRHH', 'P', true, true);
+$pdf = new Pdf('PLANILLA DE SUPLENCIAS', 'Periodo ' . $mes . '/' . $gestion, 'RRHH', 'P', true, true);
 
 $pdf->SetFillColor(230, 230, 230);
 $pdf->RoundedRect(10, 6, $pdf->getPageWidth() - 20, 30, 2.5, '1111');

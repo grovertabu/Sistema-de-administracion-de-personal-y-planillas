@@ -22,7 +22,7 @@
                       src="{{asset('images/default-avatar.jpg')}}"
                       alt="foto de perfil">
                 @else
-                <img class="profile-user-img img-fluid img-circle"
+                <img class="profile-user-img img-circular"
                       src="{{ route('trabajador.avatar',encrypt($trabajador->id))}}"
                       alt="foto de perfil">
                 @endif
@@ -73,9 +73,12 @@
                     @include('form_academica.create')
                     @include('form_academica.ModalViewPdf')
                 </div>
-                {{-- DOCUMENTOS PERSONALES Y ADMINISTRATIVOS--}}
-                @include('documento_personal.show')
-                @include('documento_personal.ModalViewPdf')
+                {{-- CURSOS --}}
+                <div class="tab-pane" id="doc_personales">
+                    @include('documento_personal.index')
+                    @include('documento_personal.create')
+                    @include('documento_personal.ModalviewPdf')
+                </div>
                 {{-- CURSOS --}}
                 <div class="tab-pane" id="cursos">
                     @include('curso.index')
@@ -108,13 +111,14 @@
 
 @section('js')
 <script>
+
 $(()=>{
     $('#fecha_nacimiento').datetimepicker({
         defaultDate: "{{$trabajador->fecha_nacimiento}}",
         format: 'DD/MM/YYYY',
         locale: moment.locale('es'),
     });
-    var urlSpanish = "{{asset('vendor/funciones/datatable_spanish.json')}}";
+    var translate_spanish = "{{asset('vendor/funciones/datatable_spanish.json')}}";
     // Lista Formacion academica
     table_formacion = $('#table_formacion').DataTable({
         ajax: {
@@ -129,16 +133,16 @@ $(()=>{
             },
             {data: 'titulo_formacion'},
             {data: 'nivel_formacion'},
-            {data: 'institucion'},
             {data: 'fecha_emision'},
             {data: 'lugar_formacion'},
             {data: 'action',orderable:false},
         ],
         order: [],
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
         autoWidth: false,
         responsive: true,
         language: {
-            url: urlSpanish
+            url: translate_spanish
         }
     });
     // Lista Cursos
@@ -159,10 +163,31 @@ $(()=>{
             {data: 'action',orderable:false},
         ],
         order: [],
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
         autoWidth: false,
         responsive: true,
         language: {
-            url: urlSpanish
+            url: translate_spanish
+        }
+    });
+    // lista documento personales
+    table_documento_personals = $('#table_documento_personals').DataTable({
+        ajax: {
+            url: "{{route('documento_personal.listar',$trabajador->id)}}",
+        },
+        columns : [
+            {data: null, defaultContent : ''},
+            {data: 'detalle_documento'},
+            {data: 'fecha_registro'},
+            {data: 'tipo_documento'},
+            {data: 'action',orderable:false},
+        ],
+        order: [],
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
+        autoWidth: false,
+        responsive: true,
+        language: {
+            url: translate_spanish
         }
     });
     // LISTA DE TABLA EXPERIENCIA LABORAL
@@ -221,8 +246,9 @@ $(()=>{
         order: [],
         autoWidth: false,
         responsive: true,
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
         language: {
-            url:urlSpanish
+            url:translate_spanish
         }
     });
     // Lista meritos
@@ -237,10 +263,11 @@ $(()=>{
             {data: 'action',orderable:false},
         ],
         order: [],
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
         autoWidth: false,
         responsive: true,
         language: {
-            url:urlSpanish
+            url:translate_spanish
         }
     });
     // Lista demeritos
@@ -257,12 +284,55 @@ $(()=>{
         order: [],
         autoWidth: false,
         responsive: true,
+        lengthMenu: [[5, 25, 50, -1], [5, 25, 50, "All"]],
         language: {
-            url:urlSpanish
+            url:translate_spanish
         }
     });
 
+
+    $(document).on('click','#deleteDocumento', function(){
+        var table = $(this).data('table');
+        var ruta = $(this).data('ruta');
+        console.log(ruta);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: "¿Desea eliminar este registro?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'green',
+            cancelButtonColor: 'red',
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar',
+             width:300,
+             allowOutsideClick:false,
+             reverseButtons: true
+        }).then(function(result){
+              if(result.value){
+                $.ajax({
+                    url:ruta,
+                    method: 'DELETE',
+                    success: function(result) {
+                        if(result.success){
+                            $('#'+table).DataTable().ajax.reload(null, false);
+                            toastr.success(result.message);
+                        }else{
+                            toastr.error(result.message);
+                        }
+                    }
+                });
+              }
+        });
+    });
 })
+</script>
+<script>
+    var urlFormacionAcademica = "{{route('form_academica.view_document',':id')}}"
 </script>
 <script src="{{asset('js/scripts/form_academica.js')}}"></script>
 <script src="{{asset('js/scripts/curso.js')}}"></script>

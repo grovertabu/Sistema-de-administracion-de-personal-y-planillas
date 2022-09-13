@@ -15,20 +15,17 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $role = Role::create(['name' => 'administrador']); // 1
-        $role2 = Role::create(['name' => 'rrhh']); // 2
-        $role3 = Role::create(['name' => 'trabajador']); //3
-        $role4 = Role::create(['name' => 'rrhh_carlos']); //4
-        $role5 = Role::create(['name' => 'rrhh_grover']); //3
+        $rol_sistemas = Role::create(['name' => 'administrador']);
+        $rol_rrhh = Role::create(['name' => 'admin_rrhh']); //3
 
+        //permisos globales
+        Permission::create(['name' => 'dash'])->syncRoles([$rol_sistemas,$rol_rrhh]);
 
+        //permisos para sistemas
+        Permission::create(['name' => 'users.index'])->syncRoles([$rol_sistemas]);
+        Permission::create(['name' => 'users.edit'])->syncRoles([$rol_sistemas]);
 
-        Permission::create(['name' => 'dash'])->syncRoles([$role, $role2, $role3,$role4,$role5]);
-
-        Permission::create(['name' => 'users.index'])->syncRoles([$role]);
-        Permission::create(['name' => 'users.edit'])->syncRoles([$role]);
-
-        Permission::create(['name' => 'rrhh_carlos'])->syncRoles([$role4]);
-        Permission::create(['name' => 'rrhh_grover'])->syncRoles([$role5]);
+        //permisos para recursos humanos
+        Permission::create(['name' => 'admin_rrhh'])->syncRoles([$rol_rrhh]);
     }
 }

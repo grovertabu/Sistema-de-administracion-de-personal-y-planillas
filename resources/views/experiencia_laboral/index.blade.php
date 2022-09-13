@@ -3,7 +3,7 @@
 </div>
 <input type="hidden" id="route_listar_exp_laboral" value="{{route('exp_laboral.listar',$trabajador->id)}}">
 <div class="table table-bordered table-hover dataTable table-responsive">
-    <table class="table table-bordered datatable display nowrap data_table" id="table_exp_laboral">
+    <table class="table table-bordered datatable display table-striped nowrap data_table" id="table_exp_laboral">
         <thead>
             <tr>
                 <th>#</th>

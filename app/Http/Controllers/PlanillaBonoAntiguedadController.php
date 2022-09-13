@@ -115,7 +115,7 @@ class PlanillaBonoAntiguedadController extends Controller
                     $antiguedad_anterior = array($contrato->antiguedad_anios, $contrato->antiguedad_meses, $contrato->antiguedad_dias);
 
                     $antiguedad_final = Funciones::sumar_antiguedad($antiguedad_anterior, $antiguedad_actual);
-                    if ($antiguedad_final[0] > 2) { //si el año del resultado es mayor a 2
+                    if ($antiguedad_final[0] >= 2) { //si el año del resultado es mayor a 2
                         // la antiguedad dependera de acuerdo a la siguiente configuracion dando su respectivo
                         // porcentaje de acuerdo en que rango configurativo pertenece
                         $conf_bono_antiguedads = ConfBonoAntiguedad::select(
@@ -317,7 +317,7 @@ class PlanillaBonoAntiguedadController extends Controller
                 $antiguedad_anterior = array($trabajador->antiguedad_anios, $trabajador->antiguedad_meses, $trabajador->antiguedad_dias);
                 // dd($antiguedad_anterior);
                 $antiguedad_final = Funciones::sumar_antiguedad($antiguedad_anterior, $antiguedad_actual);
-                if ($antiguedad_final[0] > 2) { //si el año del resultado es mayor a 2
+                if ($antiguedad_final[0] >= 2) { //si el año del resultado es mayor a 2
                     // la antiguedad dependera de acuerdo a la siguiente configuracion dando su respectivo
                     // porcentaje de acuerdo en que rango configurativo pertenece
                     $conf_bono_antiguedads = ConfBonoAntiguedad::select(
@@ -407,7 +407,7 @@ class PlanillaBonoAntiguedadController extends Controller
 
     public function eliminar_planilla($mes, $gestion, $tipo_contrato)
     {
-         DB::table('planilla_bono_antiguedads')->where([
+        DB::table('planilla_bono_antiguedads')->where([
             ['mes', '=', $mes],
             ['gestion', '=', $gestion],
             ['tipo_contrato', '=', $tipo_contrato],
@@ -416,58 +416,89 @@ class PlanillaBonoAntiguedadController extends Controller
     }
 
     // CONTROLADOR PARA EL REPORTE DE BONO DE ANTIGUEDAD
-    public function planilla_pdf($mes, $gestion, $tipo_contrato){
+    public function planilla_pdf($mes, $gestion, $tipo_contrato)
+    {
         $nomina_cargos = DB::table('nomina_cargos as nc')
-        ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id','nc.id')
-        ->join('unidad_organizacionals as u','u.id','nc.unidad_organizacional_id')
-        ->select(
+            ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
+            ->join('cargos as c', 'c.id', 'nc.cargo_id')
+            ->select(
                 'u.seccion',
+                'nc.id as id_cargo',
+                'c.nombre as nombre_cargo',
                 'nc.item as item',
-                'ac.estado as estado_asignacion',
-                'nc.estado as estado_cargo')
-        ->orderBy('nc.item')->get();
-        foreach ($nomina_cargos as $cargo) {
-            if($cargo->estado_asignacion == 'HABILITADO'){ // && $cargo->estado_cargo == 'OCUPADO'
-                $bono_antiguedads = DB::table('nomina_cargos as nc')
-                ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id','nc.id')
-                ->join('unidad_organizacionals as u','u.id','nc.unidad_organizacional_id')
-                ->join('cargos as c','c.id','nc.cargo_id')
-                ->join('trabajadors as t','t.id','ac.trabajador_id')
-                ->join('planilla_bono_antiguedads as ba','ba.asignacion_cargo_id','ac.id')
-                ->where([
-                    ['ba.mes', '=', $mes],
-                    ['ba.gestion', '=', $gestion],
-                    ['ba.tipo_contrato', '=', $tipo_contrato],
-                    ['nc.item', '=', $cargo->item],
-                    ['u.seccion', '=', $cargo->seccion],
-                ])
-                ->select(
-                    'nc.item as item',
-                    DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
-                    'c.nombre as cargo',
-                    'ba.anios_arrastre',
-                    'ba.meses_arrastre',
-                    'ba.dias_arrastre',
-                    'ba.fecha_ingreso',
-                    'ba.fecha_calculo',
-                    'ba.anios_actual',
-                    'ba.meses_actual',
-                    'ba.dias_actual',
-                    'ba.porcentaje',
-                    'ba.monto',
-                )
-                ->orderBy('nc.item')->first();
+                'nc.estado as estado_cargo'
+            )
+            ->orderBy('nc.item')->get();
+        // return $nomina_cargos->count();
+        $consulta_asistencia = DB::table('planilla_asistencias')->where([
+            ['mes', '=', $mes],
+            ['gestion', '=', $gestion],
+            ['tipo_contrato', '=', $tipo_contrato],
+        ])->get();
 
-                // de esta manera agrego las Bonos de un trabajador al item respectivo
-                $cargo->datos = $bono_antiguedads;
+        $ids_asistencias = $consulta_asistencia->pluck('asignacion_cargo_id')->toArray();
+
+        // return gettype($ids_asistencias->toArray());
+        foreach ($nomina_cargos as $cargo) {
+            $cargo_id = $cargo->id_cargo;
+            $search_cargo = DB::table('asignacion_cargos')
+            ->join('planilla_asistencias', 'planilla_asistencias.asignacion_cargo_id','asignacion_cargos.id')
+            ->where([
+                ['mes', '=', $mes],
+                ['gestion', '=', $gestion],
+                ['tipo_contrato', '=', $tipo_contrato],
+            ])
+            ->whereIn('asignacion_cargos.nomina_cargo_id', function ($query) use ($cargo_id)  {
+                $query->select('id')->from('nomina_cargos')->where('id', $cargo_id);
+            })->first();
+
+            if(!empty($search_cargo)){
+                if (in_array($search_cargo->asignacion_cargo_id, $ids_asistencias)) { // && $cargo->estado_cargo == 'OCUPADO'
+                    $bono_antiguedads = DB::table('nomina_cargos as nc')
+                        ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id', 'nc.id')
+                        ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
+                        ->join('cargos as c', 'c.id', 'nc.cargo_id')
+                        ->join('trabajadors as t', 't.id', 'ac.trabajador_id')
+                        ->join('planilla_bono_antiguedads as ba', 'ba.asignacion_cargo_id', 'ac.id')
+                        ->where([
+                            ['ba.mes', '=', $mes],
+                            ['ba.gestion', '=', $gestion],
+                            ['ba.tipo_contrato', '=', $tipo_contrato],
+                            ['nc.item', '=', $cargo->item],
+                            ['u.seccion', '=', $cargo->seccion],
+                        ])
+                        ->select(
+                            'nc.item as item',
+                            DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
+                            'c.nombre as cargo',
+                            'ba.anios_arrastre',
+                            'ba.meses_arrastre',
+                            'ba.dias_arrastre',
+                            'ba.fecha_ingreso',
+                            'ba.fecha_calculo',
+                            'ba.anios_actual',
+                            'ba.meses_actual',
+                            'ba.dias_actual',
+                            'ba.porcentaje',
+                            'ba.monto',
+                        )
+                        ->orderBy('nc.item')->first();
+
+                    // de esta manera agrego las Bonos de un trabajador al item respectivo
+                    $cargo->datos = $bono_antiguedads;
+                } else {
+                    $cargo->datos = [];
+                }
+            }else {
+                $cargo->datos = [];
             }
+
         }
-        // return $cargos;
+        // return $nomina_cargos;
         $collect = collect($nomina_cargos);
         $cargos = $collect->groupBy('seccion');
         // return $cargos;
-        return response(view('planillas.bono_antiguedad.pdf_bono_antiguedads',compact('mes', 'gestion', 'tipo_contrato','cargos')))
-        ->header('Content-Type', 'application/pdf');
+        return response(view('planillas.bono_antiguedad.pdf_bono_antiguedads', compact('mes', 'gestion', 'tipo_contrato', 'cargos','ids_asistencias')))
+            ->header('Content-Type', 'application/pdf');
     }
-
 }

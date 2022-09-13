@@ -21,6 +21,7 @@ class Trabajador extends Model
         'tipo_sangre',
         'celular',
         'telefono',
+        'profesion',
         'estado_civil',
         'sexo',
         'nacionalidad',

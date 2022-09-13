@@ -46,9 +46,11 @@ class EstructuraOrganizacionalController extends Controller
     {
         $estructura_org = Estructura_Organizacional::select('id','nombre','version')->findOrFail($id);
         $nombre_version = $estructura_org->nombre . '[' . $estructura_org->version . ']';
+
         $mensajeCargos = ($estructura_org->cargos->count() > 0) ? 'Tiene cargos relacionados. ' : '';
         $mensajeUnidadesOrganizacionales = ($estructura_org->unidades_organizacionales->count() > 0) ? 'Tiene unidades organizacionales relacionados. ' : '';
         $mensajeEscalasSalariales = ($estructura_org->escalas_salariales->count() > 0) ? 'Tiene escalas organizacionales relacionados. ' : '';
+
         if ($estructura_org && empty($mensajeCargos) && empty($mensajeUnidadesOrganizacionales) && empty($mensajeEscalasSalariales)) {
             $estructura_org->delete();
             return response()->json([

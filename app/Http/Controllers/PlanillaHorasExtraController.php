@@ -43,9 +43,9 @@ class PlanillaHorasExtraController extends Controller
         // todos los trabajadores que no tengan una horas_extra registrada
         $trabajadores = AsignacionCargo::select(
             'asignacion_cargos.id as asignacion_cargo_id',
-            DB::raw("CONCAT(trabajadors.nombre,' ',
-            trabajadors.apellido_paterno,' ',
-            trabajadors.apellido_materno)  AS nombre_completo"),
+            DB::raw("CONCAT(trabajadors.apellido_paterno,' ',
+            trabajadors.apellido_materno,' ',
+            trabajadors.nombre)  AS nombre_completo"),
         )->join('trabajadors', 'trabajadors.id', 'asignacion_cargos.trabajador_id')
             ->where('asignacion_cargos.estado', 'HABILITADO')->get();
         // Configuraciones para registrar una hora extra
@@ -211,7 +211,6 @@ class PlanillaHorasExtraController extends Controller
             ['he.mes', '=', $mes],
             ['he.gestion', '=', $gestion],
             ['he.tipo_contrato', '=', $tipo_contrato],
-            ['ac.estado', '=', 'HABILITADO'],
         ])
         ->groupBy('he.id','nombre_completo','nc.item','c.nombre','es.salario_mensual')
         ->orderBy('nc.item')

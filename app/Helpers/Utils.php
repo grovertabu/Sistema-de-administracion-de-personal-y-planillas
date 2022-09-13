@@ -12,6 +12,16 @@ class Funciones
         return $now;
     }
 
+    public static function calcular_edad($fecha_actual, $fecha_nacimiento){
+        list($ano,$mes,$dia) = explode("-",$fecha_nacimiento);
+        $ano_diferencia  = date('Y',strtotime($fecha_actual)) - $ano;
+        $mes_diferencia = date('m',strtotime($fecha_actual)) - $mes;
+        $dia_diferencia   = date('d',strtotime($fecha_actual)) - $dia;
+        if ($dia_diferencia < 0 || $mes_diferencia < 0)
+            $ano_diferencia--;
+        return $ano_diferencia;
+    }
+
     public static function mesPasado($mes)
     {
         // $mes = Carbon::now()->format('m') - 1;
@@ -240,7 +250,7 @@ class Funciones
     {
         if ($gen == 'M') {
             $estados = [
-                'NONE' => 'Sin Especificar',
+                'NONE' => 'SIN ESPECIFICAR',
                 'SINGLE' => 'SOLTERO',
                 'MARRIED' => 'CASADO',
                 'WIDOWER' => 'VIUDO',
@@ -249,7 +259,7 @@ class Funciones
             return $estados[$estado];
         } else {
             $estados = [
-                'NONE' => 'Sin Especificar',
+                'NONE' => 'SIN ESPECIFICAR',
                 'SINGLE' => 'SOLTERA',
                 'MARRIED' => 'CASADA',
                 'WIDOWER' => 'VIUDA',
@@ -258,6 +268,19 @@ class Funciones
             return $estados[$estado];
         }
     }
+
+    public static function calcula_edad($fecha_nacimiento){
+    $edad = Carbon::parse($fecha_nacimiento)->age;
+    return $edad;
+    }
+
+    public static function fecha_text($anio,$mes,$dia){
+        $anio = $anio == 1 ? $anio.' año ' : $anio.' años ';
+        $mes = $mes == 1 ? $mes.' mes ' : $mes.' meses ';
+        $dia = $dia == 1 ? $dia.' día ' : $dia.' días ';
+        return $anio.$mes.$dia;
+    }
+
 }
 
 // FUnciones globales

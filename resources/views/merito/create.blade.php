@@ -14,8 +14,8 @@
                     <div class="row">
                         <input type="hidden" name="trabajador_id" id="trabajador_id" value="{{$trabajador->id}}">
                         <input type="hidden" name="created_by" id="created_by" value="{{auth()->user()->name}}">
-                        <x-dg-input type="text" name="detalle_merito" id="detalle_merito"
-                            label="Detalle del mérito" topclass="col-md-12 required"/>
+                        <x-input type="text" name="detalle_merito" id="detalle_merito" inputclass="text-uppercase"
+                            label="Detalle" topclass="col-md-12 required"/>
                         <x-date-icon id="fecha_merito"  name="fecha_merito"
                             label="Fecha de registro" topclass="col-md-6 required" />
                         <x-input-file name="file_merito" id="file_merito" topclass="col-md-12"

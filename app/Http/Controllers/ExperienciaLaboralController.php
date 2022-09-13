@@ -33,20 +33,18 @@ class ExperienciaLaboralController extends Controller
                     id="ViewModalExpLaboral"
                     data-id="' . encrypt($exp_laboral->id) . '"
                     title="Ver documento" class="btn btn-primary btn-xs">
-                    Ver Documento <i class="fas fa-file-pdf"></i></button>':'';
+                    Ver Documento <i class="fas fa-file-pdf"></i></button>':'Sin documento';
                     $acciones = $ver_documento;
-                    // $acciones .='<a title="Eliminar" href="/curso/'.$curso->id.'/delete" class="btn  btn-danger btn-sm btnEliminar" id="btnEliminar"><i class="fas fa-trash"></i></a>';
+                    $acciones .= '&nbsp;&nbsp;<button type="button" title="Eliminar"
+                    data-ruta="' . route('exp_laboral.delete',$exp_laboral->id) . '"
+                    data-table="table_exp_laboral"
+                    class="btn btn-danger btn-sm" id="deleteDocumento"><i class="fas fa-trash"></i></button>';
                     return $acciones;
                 })->rawColumns(['action'])
                 ->make(true);
         }
     }
-    public function showModalPdf($id)
-    {
-        $html = 'ID: ' . $id;
 
-        return response()->json(['html' => $html]);
-    }
     public function registrar(Request $request)
     {
         $data = $request->all();
@@ -99,5 +97,19 @@ class ExperienciaLaboralController extends Controller
             'Content-Transfer-Encoding' => 'binary',
             'Accept-Ranges' => 'bytes'
         ]);
+    }
+
+    public function delete($id)
+    {
+        $exp_laboral = Experiencia_laboral::find($id);
+        if ($exp_laboral->file_exp_laboral != '') {
+            Storage::disk('local')->delete($exp_laboral->file_exp_laboral);
+        }
+        $query = $exp_laboral->delete();
+        if ($query) {
+            return response()->json(['success' => true, 'message' => 'Documento eliminado exitosamente']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Algo salio Mal']);
+        }
     }
 }

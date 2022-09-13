@@ -50,6 +50,7 @@ class PlanillaSuplenciaController extends Controller
             ->join('cargos as c', 'c.id', 'nc.cargo_id')
             ->join('escala_salarials as es', 'es.id', 'nc.escala_salarial_id')
             ->select(
+                'nc.item as item',
                 'nc.id as id_cargo',
                 'c.nombre as nombre_cargo',
                 'es.salario_mensual as salario_mensual'

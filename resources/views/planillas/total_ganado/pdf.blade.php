@@ -34,7 +34,7 @@ if ($cargos->count() > 0) {
         $pdf->MultiCell(259, $h, 'SECCIÓN ' . $key, 1, 'C', 1, 1, '', '', 1, '', '', '', $h, 'M');
         $total_seccion = 0;
         foreach ($cargo as $total_ganado) {
-            if ($pdf->GetY() + $h > $pdf->getPageHeight() - 12) {
+            if ($pdf->GetY() + $h > $pdf->getPageHeight() - 15) {
                 $pdf->AddPage();
                 $pdf->SetY(15);
                 $pdf->SetFont('dejavusans', 'B', 5);
@@ -54,7 +54,7 @@ if ($cargos->count() > 0) {
             $pdf->SetFont('dejavusans', '', 5.5);
             $pdf->SetFillColor(220, 220, 220);
             $pdf->MultiCell(14, 6, $total_ganado->item, 1, 'C', 0, '', '', '', 1, '', '', '', 6, 'M');
-            if ($total_ganado->estado_asignacion == 'HABILITADO') {
+            if (!empty($total_ganado->datos)) {
                 // dd($total_ganado->datos->nombre_completo);
                 $h_cargo = ceil($pdf->getStringHeight(35, trim($total_ganado->datos->cargo), $reseth = true, $autopadding = true, $border = 1));
                 $h = max([$h_cargo]) + 2;
@@ -83,4 +83,4 @@ if ($cargos->count() > 0) {
 } else {
     $pdf->MultiCell(194, 6, 'No existen registros', 1, 'C', 0, '', '', '', 1, '', '', '', 6, 'M');
 }
-$pdf->Output('Planilla_Asistencia_Periodo_' . $mes . '_' . $gestion . '.pdf', 'I');
+$pdf->Output('Planilla_Total_ganado_Periodo_' . $mes . '_' . $gestion . '.pdf', 'I');

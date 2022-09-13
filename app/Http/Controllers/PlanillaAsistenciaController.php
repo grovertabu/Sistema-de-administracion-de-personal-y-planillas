@@ -68,8 +68,9 @@ class PlanillaAsistenciaController extends Controller
             $lista_contratos = AsignacionCargo::select('id', 'nomina_cargo_id', 'estado')->with(['nomina_cargo:id,tipo_contrato_id'])
                 ->whereHas('nomina_cargo', function ($query) use ($tipo_contrato_id) {
                     $query->where('tipo_contrato_id', '=', $tipo_contrato_id);
-                })->get();
-            if($lista_contratos->count()>0){
+                })->where('estado', 'HABILITADO')
+                ->get();
+            if ($lista_contratos->count() > 0) {
                 foreach ($lista_contratos as $contrato) {
                     PlanillaAsistencia::create([
                         'mes' => $mes,
@@ -81,16 +82,17 @@ class PlanillaAsistenciaController extends Controller
                     ]);
                 }
                 return redirect()->route('asistencia.lista', ['tipo_contrato' => $tipo_contrato_id, 'mes' => $mes, 'gestion' => $gestion]);
+            } else {
+                return redirect()->route(
+                    'asistencia.lista',
+                    [
+                        'tipo_contrato' => $tipo_contrato_id,
+                        'mes' => $mes,
+                        'gestion' => $gestion
+                    ]
+                )
+                    ->with('message', 'No existen registros para generar la planilla');
             }
-            else{
-                return redirect()->route('asistencia.lista',
-                                        ['tipo_contrato' => $tipo_contrato_id,
-                                        'mes' => $mes,
-                                        'gestion' => $gestion])
-                                        ->with('message','No existen registros para generar la planilla');
-            }
-
-
         } else {
             return redirect()->route('asistencia.lista', [
                 'tipo_contrato' => $tipo_contrato_id,
@@ -103,11 +105,15 @@ class PlanillaAsistenciaController extends Controller
     {
         $asistencia = PlanillaAsistencia::find($id);
 
-        $cargo = AsignacionCargo::select('id', 'trabajador_id')
-            ->find($asistencia->asignacion_cargo_id);
-
-        $trabajador = Trabajador::select(DB::raw("CONCAT(trabajadors.nombre,' ',trabajadors.apellido_paterno,' ',trabajadors.apellido_materno)  AS nombre_completo"))
-            ->find($cargo->trabajador_id);
+        $trabajador = AsignacionCargo::join('nomina_cargos', 'nomina_cargos.id', 'asignacion_cargos.nomina_cargo_id')
+            ->join('cargos', 'cargos.id', 'nomina_cargos.cargo_id')
+            ->join('trabajadors', 'trabajadors.id', 'asignacion_cargos.trabajador_id')
+            ->select(
+                DB::raw("CONCAT(trabajadors.nombre,' ',trabajadors.apellido_paterno,' ',trabajadors.apellido_materno)  AS nombre_completo"),
+                'cargos.nombre as nombre_cargo',
+                'nomina_cargos.item as item'
+            )
+            ->where('asignacion_cargos.id', $asistencia->asignacion_cargo_id)->first();
         return view('planillas.asistencia.edit', compact('asistencia', 'trabajador'));
     }
     public function update($id, Request $request)
@@ -117,6 +123,7 @@ class PlanillaAsistenciaController extends Controller
         ]);
         $data = PlanillaAsistencia::select('id', 'mes', 'gestion', 'tipo_contrato')->find($id);
         $data->dias_asistencia = $request->dias_asistencia;
+        $data->observacion = trim($request->observacion);
         $asistencia = $data->save();
         if ($asistencia) {
             return redirect()->route('asistencia.lista', [
@@ -150,7 +157,7 @@ class PlanillaAsistenciaController extends Controller
     public function generar_asistencia(Request $request)
     {
 
-        $dias_asistencia = isset($request->dias_asistencia) ? $request->dias_asistencia : 30 ;
+        $dias_asistencia = isset($request->dias_asistencia) ? $request->dias_asistencia : 30;
         $request->validate([
             'mes' => 'required',
             'gestion' => 'required',
@@ -175,20 +182,22 @@ class PlanillaAsistenciaController extends Controller
         $verificar_asignacion_cargo_id = isset($verificar->asignacion_cargo_id) ? $verificar->asignacion_cargo_id : "";
         $verificar_asignacion_cargo_id = isset($verificar->asignacion_cargo_id) ? $verificar->asignacion_cargo_id : "";
         if ($verificar_tipo_contrato != $tipo_contrato_id && $verificar_mes != $mes && $verificar_gestion != $gestion && $verificar_asignacion_cargo_id != $cargo_trabajador) {
-                PlanillaAsistencia::create([
-                    'mes' => $mes,
-                    'gestion' => $gestion,
-                    'dias_asistencia' => $request->dias_asistencia,
-                    'dias_laborales' => $request->dias_laborales,
-                    'tipo_contrato' => $tipo_contrato_id,
-                    'asignacion_cargo_id' => $cargo_trabajador,
-                ]);
-            return redirect()->route('asistencia.lista',
-            [
-                'tipo_contrato' => $tipo_contrato_id,
+            PlanillaAsistencia::create([
                 'mes' => $mes,
-                'gestion' => $gestion
-            ])->with('edit', 'Asistencia creado exitosamente.');
+                'gestion' => $gestion,
+                'dias_asistencia' => $request->dias_asistencia,
+                'dias_laborales' => $request->dias_laborales,
+                'tipo_contrato' => $tipo_contrato_id,
+                'asignacion_cargo_id' => $cargo_trabajador,
+            ]);
+            return redirect()->route(
+                'asistencia.lista',
+                [
+                    'tipo_contrato' => $tipo_contrato_id,
+                    'mes' => $mes,
+                    'gestion' => $gestion
+                ]
+            )->with('edit', 'Asistencia creado exitosamente.');
         } else {
             return redirect()->route('asistencia.lista', [
                 'tipo_contrato' => $tipo_contrato_id,
@@ -216,50 +225,78 @@ class PlanillaAsistenciaController extends Controller
         return response()->json(['success' => true, 'message' => "Planilla Asistencia eliminada exitosamente."], 200);
     }
 
-    public function planilla_pdf($mes, $gestion, $tipo_contrato){
+    public function planilla_pdf($mes, $gestion, $tipo_contrato)
+    {
         $nomina_cargos = DB::table('nomina_cargos as nc')
-        ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id','nc.id')
-        ->join('unidad_organizacionals as u','u.id','nc.unidad_organizacional_id')
-        ->select(
+            ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
+            ->join('cargos as c', 'c.id', 'nc.cargo_id')
+            ->select(
+                'nc.id as id_cargo',
                 'u.seccion',
+                'c.nombre as nombre_cargo',
                 'nc.item as item',
-                'ac.estado as estado_asignacion')
-        ->orderBy('nc.item')->get();
+                'nc.estado as estado_cargo'
+            )
+            ->orderBy('nc.item')->get();
+        $consulta_asistencia = DB::table('planilla_asistencias')->where([
+            ['mes', '=', $mes],
+            ['gestion', '=', $gestion],
+            ['tipo_contrato', '=', $tipo_contrato],
+        ])->get();
+        $ids_asistencias = $consulta_asistencia->pluck('asignacion_cargo_id')->toArray();
+        // return gettype($ids_asistencias->toArray());
         foreach ($nomina_cargos as $cargo) {
-            if($cargo->estado_asignacion == 'HABILITADO'){
-                $asistencias = DB::table('nomina_cargos as nc')
-                ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id','nc.id')
-                ->join('unidad_organizacionals as u','u.id','nc.unidad_organizacional_id')
-                ->join('cargos as c','c.id','nc.cargo_id')
-                ->join('trabajadors as t','t.id','ac.trabajador_id')
-                ->join('planilla_asistencias as a','a.asignacion_cargo_id','ac.id')
+
+            $cargo_id = $cargo->id_cargo;
+            $search_cargo = DB::table('asignacion_cargos')
+                ->join('planilla_asistencias', 'planilla_asistencias.asignacion_cargo_id', 'asignacion_cargos.id')
                 ->where([
-                    ['a.mes', '=', $mes],
-                    ['a.gestion', '=', $gestion],
-                    ['a.tipo_contrato', '=', $tipo_contrato],
-                    ['nc.item', '=', $cargo->item],
-                    ['u.seccion', '=', $cargo->seccion],
+                    ['mes', '=', $mes],
+                    ['gestion', '=', $gestion],
+                    ['tipo_contrato', '=', $tipo_contrato],
                 ])
-                ->select(
-                    'nc.item as item',
-                    DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
-                    'c.nombre as cargo',
-                    'a.mes as mes',
-                    'a.gestion as gestion',
-                    'a.tipo_contrato as tipo_contrato',
-                    'a.dias_asistencia as dias_asistencia',
-                    'a.dias_laborales as dias_laborales',
-                )
-                ->orderBy('nc.item')->first();
-                // de esta manera agrego las asistencias de un trabajador al item respectivo
-                $cargo->datos = $asistencias;
+                ->whereIn('asignacion_cargos.nomina_cargo_id', function ($query) use ($cargo_id) {
+                    $query->select('id')->from('nomina_cargos')->where('id', $cargo_id);
+                })->first();
+
+            if (!empty($search_cargo)) {
+                if (in_array($search_cargo->asignacion_cargo_id, $ids_asistencias)) {
+                    $asistencias = DB::table('nomina_cargos as nc')
+                        ->leftjoin('asignacion_cargos as ac', 'ac.nomina_cargo_id', 'nc.id')
+                        ->join('unidad_organizacionals as u', 'u.id', 'nc.unidad_organizacional_id')
+                        ->join('cargos as c', 'c.id', 'nc.cargo_id')
+                        ->join('trabajadors as t', 't.id', 'ac.trabajador_id')
+                        ->join('planilla_asistencias as a', 'a.asignacion_cargo_id', 'ac.id')
+                        ->where([
+                            ['a.mes', '=', $mes],
+                            ['a.gestion', '=', $gestion],
+                            ['a.tipo_contrato', '=', $tipo_contrato],
+                            ['nc.item', '=', $cargo->item],
+                            ['u.seccion', '=', $cargo->seccion],
+                        ])
+                        ->select(
+                            'nc.item as item',
+                            DB::raw("CONCAT(t.nombre,' ',t.apellido_paterno,' ',t.apellido_materno)  AS nombre_completo"),
+                            'c.nombre as cargo',
+                            'a.mes as mes',
+                            'a.gestion as gestion',
+                            'a.tipo_contrato as tipo_contrato',
+                            'a.dias_asistencia as dias_asistencia',
+                            'a.dias_laborales as dias_laborales',
+                        )
+                        ->orderBy('nc.item')->first();
+                    // de esta manera agrego las asistencias de un trabajador al item respectivo
+                    $cargo->datos = $asistencias;
+                } else {
+                    $cargo->datos = [];
+                }
+            } else {
+                $cargo->datos = [];
             }
         }
-        // return $cargos;
-
         $collect = collect($nomina_cargos);
         $cargos = $collect->groupBy('seccion');
-        return response(view('planillas.asistencia.pdf_asistencias',compact('mes', 'gestion', 'tipo_contrato','cargos')))
-        ->header('Content-Type', 'application/pdf');
+        return response(view('planillas.asistencia.pdf_asistencias', compact('mes', 'gestion', 'tipo_contrato', 'cargos')))
+            ->header('Content-Type', 'application/pdf');
     }
 }

@@ -15,7 +15,7 @@
                     <div class="card-body row">
                         <x-dg-input type="text" name="descripcion" id="descripcion" label="Descripción" topclass="col-md-12 required"
                             value="{{ old('descripcion') }}" />
-                        <x-dg-input type="text" name="factor_calculado" id="factor_calculado" label="Rango Inicial" topclass="col-md-12 required"
+                        <x-dg-input type="text" name="factor_calculado" id="factor_calculado" label="Factor de calculo" topclass="col-md-12 required"
                             value="{{ old('factor_calculado') }}" />
                     </div>
                     <div class="card-footer">

@@ -16,7 +16,6 @@ class AsignacionCargoController extends Controller
     public function __construct()
     {
         $this->AsignacionCargo = new AsignacionCargo();
-
     }
     public function lista_items(Request $request)
     {
@@ -31,9 +30,9 @@ class AsignacionCargoController extends Controller
                     return $asignacion_cargo->trabajador->ci;
                 })
                 ->addColumn('trabajador_nombre', function ($asignacion_cargo) {
-                    return $asignacion_cargo->trabajador->nombre . '<br>' .
+                    return mb_strtoupper($asignacion_cargo->trabajador->nombre . '<br>' .
                         $asignacion_cargo->trabajador->apellido_paterno . ' ' .
-                        $asignacion_cargo->trabajador->apellido_materno;
+                        $asignacion_cargo->trabajador->apellido_materno);
                 })
                 ->addColumn('cargo', function ($asignacion_cargo) {
                     return strtoupper($asignacion_cargo->nomina_cargo->cargo->nombre);
@@ -53,12 +52,12 @@ class AsignacionCargoController extends Controller
             $trabajadores = Trabajador::select('id', 'ci', 'nombre', 'apellido_paterno', 'apellido_materno')
                 ->where('estado_trabajador', 'HABILITADO')
                 ->whereNotIn('id', function ($query) {
-                    $query->select('trabajador_id')->from('asignacion_cargos');
+                    $query->select('trabajador_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
-                ->where('tipo_contrato_id',1)
+                ->where('tipo_contrato_id', 1)
                 ->whereNotIn('id', function ($query) {
-                    $query->select('nomina_cargo_id')->from('asignacion_cargos');
+                    $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $viewCreate = view('asignacion_cargo.item.create', compact('trabajadores', 'nomina_cargos'));
             return response($viewCreate);
@@ -80,11 +79,19 @@ class AsignacionCargoController extends Controller
                 'values' => $validator->errors()->toArray()
             ]);
         } else {
+            // si ya esta dentro de la asignacion obtener la fecha de ingreso
+            // $search_cargo = AsignacionCargo::where('trabajador_id', $data['trabajador_id'])
+            //     ->orderBy('fecha_ingreso')->first();
+            // if ($search_cargo->fecha_ingreso) {
+            //     $data['fecha_nuevo_cargo'] = $data['fecha_ingreso'];
+            //     $data['fecha_ingreso'] = $search_cargo->fecha_ingreso;
+            // }
             $query = AsignacionCargo::create($data);
             $nomina_cargo_id = $data['nomina_cargo_id'];
             $nomina_cargo = NominaCargo::find($nomina_cargo_id);
             $nomina_cargo->estado = 'OCUPADO';
             $queryNomina = $nomina_cargo->save();
+
             if (!$query && $queryNomina) {
                 return response()->json(['code' => 0, 'msg' => 'Algo salio Mal']);
             } else {
@@ -137,7 +144,7 @@ class AsignacionCargoController extends Controller
             if ($item) {
                 $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
                     ->whereNotIn('id', function ($query) {
-                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado','HABILITADO');
+                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                     })->get();
                 $viewEditarItem = view('asignacion_cargo.item.change', compact('item', 'nomina_cargos'));
                 return response($viewEditarItem);
@@ -166,7 +173,7 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $itemAnterior = AsignacionCargo::find($id);
-                $item_id=$itemAnterior->id;
+                $item_id = $itemAnterior->id;
                 $old_nomina_cargo_id = $itemAnterior->nomina_cargo_id;
                 $trabajador_id = $itemAnterior->trabajador_id;
                 $itemAnterior->fecha_conclusion = $data['fecha_conclusion'];
@@ -177,10 +184,18 @@ class AsignacionCargoController extends Controller
                 $cargoAnterior->estado = "LIBRE";
                 $cargoAnterior->save();
                 // crear nuevo item y cambiar el estado del nuevo cargo a OCUPADO
+                // si ya esta dentro de la asignacion obtener la fecha de ingreso
+                $search_cargo = AsignacionCargo::where('trabajador_id', $trabajador_id)
+                ->orderBy('fecha_ingreso')->first();
+                if ($search_cargo->fecha_ingreso) {
+                    $data['fecha_nuevo_cargo'] = $data['fecha_ingreso'];
+                    $data['fecha_ingreso'] = $search_cargo->fecha_ingreso;
+                }
                 $nuevoItem = AsignacionCargo::create([
                     'trabajador_id' => $trabajador_id,
                     'nomina_cargo_id' => (int)$data['nomina_cargo_id'],
                     'fecha_ingreso' => $data['fecha_ingreso'],
+                    'fecha_nuevo_cargo' => $data['fecha_nuevo_cargo'],
                     'aporte_afp' => $data['aporte_afp'],
                     'sindicato' => $data['sindicato'],
                     'socio_fe' => $data['socio_fe'],
@@ -190,11 +205,12 @@ class AsignacionCargoController extends Controller
                 $nuevoCargo->estado = 'OCUPADO';
                 $nuevoCargo->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Item nro '. $item_id.' Modificado.'  ,
-                                'data' => $nuevoItem],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item nro ' . $item_id . ' Modificado.',
+                    'data' => $nuevoItem
+                ], 200);
             }
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             return response('Not Found', 404)->header('Content-Type', 'application/json');
@@ -231,10 +247,11 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $itemAnterior = AsignacionCargo::find($id);
-                $item_id=$itemAnterior->id;
+                $item_id = $itemAnterior->id;
                 $old_nomina_cargo_id = $itemAnterior->nomina_cargo_id;
                 $trabajador_id = $itemAnterior->trabajador_id;
                 $itemAnterior->fecha_conclusion = $data['fecha_conclusion'];
+                $itemAnterior->motivo_baja = $data['motivo_baja'];
                 $itemAnterior->estado = 'INHABILITADO';
                 $itemAnterior->save();
                 // Cambiar a libre cargo anterior
@@ -242,8 +259,10 @@ class AsignacionCargoController extends Controller
                 $cargoAnterior->estado = "LIBRE";
                 $cargoAnterior->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Item nro '. $item_id.' dado de Baja.'],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item nro ' . $item_id . ' dado de Baja.'
+                ], 200);
             }
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
@@ -261,9 +280,9 @@ class AsignacionCargoController extends Controller
                     return $asignacion_cargo->trabajador->ci;
                 })
                 ->addColumn('trabajador_nombre', function ($asignacion_cargo) {
-                    return $asignacion_cargo->trabajador->nombre . '<br>' .
+                    return mb_strtoupper($asignacion_cargo->trabajador->nombre . '<br>' .
                         $asignacion_cargo->trabajador->apellido_paterno . ' ' .
-                        $asignacion_cargo->trabajador->apellido_materno;
+                        $asignacion_cargo->trabajador->apellido_materno);
                 })
                 ->addColumn('cargo', function ($asignacion_cargo) {
                     return strtoupper($asignacion_cargo->nomina_cargo->cargo->nombre);
@@ -283,12 +302,12 @@ class AsignacionCargoController extends Controller
             $trabajadores = Trabajador::select('id', 'ci', 'nombre', 'apellido_paterno', 'apellido_materno')
                 ->where('estado_trabajador', 'HABILITADO')
                 ->whereNotIn('id', function ($query) {
-                    $query->select('trabajador_id')->from('asignacion_cargos');
+                    $query->select('trabajador_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
-                ->where('tipo_contrato_id',2)
+                ->where('tipo_contrato_id', 2)
                 ->whereNotIn('id', function ($query) {
-                    $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado','HABILITADO');
+                    $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $viewCreate = view('asignacion_cargo.consultor.create', compact('trabajadores', 'nomina_cargos'));
             return response($viewCreate);
@@ -368,9 +387,9 @@ class AsignacionCargoController extends Controller
             $consultor = AsignacionCargo::find($id);
             if ($consultor) {
                 $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
-                    ->where('tipo_contrato_id',2)
+                    ->where('tipo_contrato_id', 2)
                     ->whereNotIn('id', function ($query) {
-                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado','HABILITADO');
+                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                     })->get();
                 $viewChangeConsultor = view('asignacion_cargo.consultor.change', compact('consultor', 'nomina_cargos'));
                 return response($viewChangeConsultor);
@@ -401,7 +420,7 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $consultorAnterior = AsignacionCargo::find($id);
-                $consultor_id=$consultorAnterior->id;
+                $consultor_id = $consultorAnterior->id;
                 $old_nomina_cargo_id = $consultorAnterior->nomina_cargo_id;
                 $trabajador_id = $consultorAnterior->trabajador_id;
                 $consultorAnterior->fecha_conclusion = $data['fecha_conclusion_antiguo'];
@@ -423,11 +442,12 @@ class AsignacionCargoController extends Controller
                 $nuevoCargo->estado = 'OCUPADO';
                 $nuevoCargo->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Consultor nro '. $consultor_id.' Modificado.'  ,
-                                'data' => $nuevoConsultor],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Consultor nro ' . $consultor_id . ' Modificado.',
+                    'data' => $nuevoConsultor
+                ], 200);
             }
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             return response('Not Found', 404)->header('Content-Type', 'application/json');
@@ -464,9 +484,10 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $consultorAnterior = AsignacionCargo::find($id);
-                $consultor_id=$consultorAnterior->id;
+                $consultor_id = $consultorAnterior->id;
                 $old_nomina_cargo_id = $consultorAnterior->nomina_cargo_id;
                 $consultorAnterior->fecha_conclusion = $data['fecha_conclusion'];
+                $consultorAnterior->motivo_baja = $data['motivo_baja'];
                 $consultorAnterior->estado = 'INHABILITADO';
                 $consultorAnterior->save();
                 // Cambiar a libre cargo anterior
@@ -474,8 +495,10 @@ class AsignacionCargoController extends Controller
                 $cargoAnterior->estado = "LIBRE";
                 $cargoAnterior->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Consultor nro '. $consultor_id.' dado de Baja.'],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Consultor nro ' . $consultor_id . ' dado de Baja.'
+                ], 200);
             }
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
@@ -494,9 +517,9 @@ class AsignacionCargoController extends Controller
                     return $asignacion_cargo->trabajador->ci;
                 })
                 ->addColumn('trabajador_nombre', function ($asignacion_cargo) {
-                    return $asignacion_cargo->trabajador->nombre . '<br>' .
+                    return mb_strtoupper($asignacion_cargo->trabajador->nombre . '<br>' .
                         $asignacion_cargo->trabajador->apellido_paterno . ' ' .
-                        $asignacion_cargo->trabajador->apellido_materno;
+                        $asignacion_cargo->trabajador->apellido_materno);
                 })
                 ->addColumn('cargo', function ($asignacion_cargo) {
                     return strtoupper($asignacion_cargo->nomina_cargo->cargo->nombre);
@@ -516,12 +539,12 @@ class AsignacionCargoController extends Controller
             $trabajadores = Trabajador::select('id', 'ci', 'nombre', 'apellido_paterno', 'apellido_materno')
                 ->where('estado_trabajador', 'HABILITADO')
                 ->whereNotIn('id', function ($query) {
-                    $query->select('trabajador_id')->from('asignacion_cargos');
+                    $query->select('trabajador_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
-                ->where('tipo_contrato_id',3)
+                ->where('tipo_contrato_id', 3)
                 ->whereNotIn('id', function ($query) {
-                    $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado','HABILITADO');
+                    $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                 })->get();
             $viewCreate = view('asignacion_cargo.eventual.create', compact('trabajadores', 'nomina_cargos'));
             return response($viewCreate);
@@ -601,9 +624,9 @@ class AsignacionCargoController extends Controller
             $eventual = AsignacionCargo::find($id);
             if ($eventual) {
                 $nomina_cargos = NominaCargo::where('estado', 'LIBRE')
-                    ->where('tipo_contrato_id',3)
+                    ->where('tipo_contrato_id', 3)
                     ->whereNotIn('id', function ($query) {
-                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado','HABILITADO');
+                        $query->select('nomina_cargo_id')->from('asignacion_cargos')->where('estado', 'HABILITADO');
                     })->get();
                 $viewChangeEventual = view('asignacion_cargo.eventual.change', compact('eventual', 'nomina_cargos'));
                 return response($viewChangeEventual);
@@ -633,7 +656,7 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $eventualAnterior = AsignacionCargo::find($id);
-                $eventual_id=$eventualAnterior->id;
+                $eventual_id = $eventualAnterior->id;
                 $old_nomina_cargo_id = $eventualAnterior->nomina_cargo_id;
                 $trabajador_id = $eventualAnterior->trabajador_id;
                 $eventualAnterior->fecha_conclusion = $data['fecha_conclusion_antiguo'];
@@ -655,11 +678,12 @@ class AsignacionCargoController extends Controller
                 $nuevoCargo->estado = 'OCUPADO';
                 $nuevoCargo->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Eventual nro '. $eventual_id.' Modificado.'  ,
-                                'data' => $nuevoEventual],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Eventual nro ' . $eventual_id . ' Modificado.',
+                    'data' => $nuevoEventual
+                ], 200);
             }
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             return response('Not Found', 404)->header('Content-Type', 'application/json');
@@ -696,9 +720,10 @@ class AsignacionCargoController extends Controller
             } else {
                 DB::beginTransaction();
                 $eventualAnterior = AsignacionCargo::find($id);
-                $eventual_id=$eventualAnterior->id;
+                $eventual_id = $eventualAnterior->id;
                 $old_nomina_cargo_id = $eventualAnterior->nomina_cargo_id;
                 $eventualAnterior->fecha_conclusion = $data['fecha_conclusion'];
+                $eventualAnterior->motivo_baja = $data['motivo_baja'];
                 $eventualAnterior->estado = 'INHABILITADO';
                 $eventualAnterior->save();
                 // Cambiar a libre cargo anterior
@@ -706,12 +731,59 @@ class AsignacionCargoController extends Controller
                 $cargoAnterior->estado = "LIBRE";
                 $cargoAnterior->save();
                 DB::commit();
-                return response()->json(['success' => true,
-                                'message' => 'Eventual nro '. $eventual_id.' dado de Baja.'],200);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Eventual nro ' . $eventual_id . ' dado de Baja.'
+                ], 200);
             }
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             return response('Not Found', 404)->header('Content-Type', 'application/json');
         }
+    }
+
+
+    // ************************************************************************************************
+
+    public function pdf(Request $request)
+    {
+        $tipo_contrato_id = $request->tipo_contrato;
+        $estado = $request->estado;
+        $nombre_tipo = $request->nombre_tipo;
+        $contratos = AsignacionCargo::select(
+            'asignacion_cargos.id',
+            'asignacion_cargos.fecha_ingreso',
+            'asignacion_cargos.fecha_conclusion',
+            'asignacion_cargos.aporte_afp',
+            'asignacion_cargos.sindicato',
+            'asignacion_cargos.socio_fe',
+            'asignacion_cargos.motivo_baja',
+            'asignacion_cargos.trabajador_id',
+            'asignacion_cargos.nomina_cargo_id',
+            'asignacion_cargos.estado'
+        )
+            ->join('nomina_cargos', 'nomina_cargos.id', 'asignacion_cargos.nomina_cargo_id')
+            ->with(['trabajador' => function ($query) {
+                $query->select('id', 'ci', 'nombre', 'apellido_paterno', 'apellido_materno');
+            }])
+            ->with([
+                'nomina_cargo' => function ($query) {
+                    $query->select('id', 'item', 'cargo_id', 'escala_salarial_id');
+                },
+                'nomina_cargo.cargo' => function ($query) {
+                    $query->select('id', 'nombre');
+                },
+                'nomina_cargo.escala_salarial' => function ($query) {
+                    $query->select('id', 'salario_mensual');
+                },
+            ])
+            ->whereHas('nomina_cargo', function ($query) use ($tipo_contrato_id) {
+                $query->where('tipo_contrato_id', '=', $tipo_contrato_id);
+            })
+            ->where('asignacion_cargos.estado', $estado)
+            ->orderBy('nomina_cargos.item', 'ASC')
+            ->get();
+        return response(view('asignacion_cargo.print.pdf', compact('contratos', 'estado', 'tipo_contrato_id', 'nombre_tipo')))
+            ->header('Content-Type', 'application/pdf');
     }
 }

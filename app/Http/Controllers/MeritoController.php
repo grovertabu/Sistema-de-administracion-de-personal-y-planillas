@@ -33,11 +33,10 @@ class MeritoController extends Controller
                                 Ver documento <i class="fas fa-file-pdf"></i></button> ';
                     $ver_documento= $merito->file_merito !='' ? $buton_documento : 'Sin Documento ';
                     $acciones = $ver_documento;
-                    $acciones .='<a title="Eliminar" href="/merito/'.$merito->id.'/delete"
-                                class="btn  btn-danger btn-sm btnEliminar"
-                                id="btnEliminar">
-                                <i class="fas fa-trash"></i>
-                                </a>';
+                    $acciones .= '&nbsp;&nbsp;<button type="button" title="Eliminar"
+                    data-ruta="' . route('merito.delete',$merito->id) . '"
+                    data-table="table_meritos"
+                    class="btn btn-danger btn-sm" id="deleteDocumento"><i class="fas fa-trash"></i></button>';
                     return $acciones;
                 })->rawColumns(['action'])
                 ->make(true);
@@ -98,5 +97,19 @@ class MeritoController extends Controller
             'Content-Transfer-Encoding' => 'binary',
             'Accept-Ranges' => 'bytes'
         ]);
+    }
+
+    public function delete($id)
+    {
+        $merito = Merito::find($id);
+        if ($merito->file_merito != '') {
+            Storage::disk('local')->delete($merito->file_merito);
+        }
+        $query = $merito->delete();
+        if ($query) {
+            return response()->json(['success' => true, 'message' => 'Documento eliminado exitosamente']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Algo salio Mal']);
+        }
     }
 }

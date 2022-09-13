@@ -12,36 +12,20 @@ class UserSeeder extends Seeder
     {
         User::create(
             [
-                'name' => 'Admin',
+                'name' => 'Sistemas',
                 'username' => 'admin',
                 'password' => bcrypt('password'),
             ]
         )->assignRole('administrador');
         User::create(
             [
-                'name'     => 'Recursos Humanos',
-                'username'    => 'rrhh',
-                'password' =>  bcrypt('password'),
-                'tipo_user' => 'rrhh',
+                'name'     => 'Administración de personal',
+                'username'    => 'admin_rrhh',
+                'password' =>  bcrypt('123456'),
+                'tipo_user' => 'admin_rrhh',
             ]
-        )->assignRole('rrhh');
-        User::create(
-            [
-                'name'     => 'Carlos Vasquez',
-                'username'    => 'carlosv',
-                'password' =>  bcrypt('password'),
-                'tipo_user' => 'rrhh',
-            ]
-        )->assignRole('rrhh_carlos');
-        User::create(
-            [
-                'name'     => 'Grover Taboada',
-                'username'    => 'grovert',
-                'password' =>  bcrypt('password'),
-                'tipo_user' => 'rrhh',
-            ]
-        )->assignRole('rrhh_grover');
+        )->assignRole('admin_rrhh');
 
-        User::factory(5)->create();
+        // User::factory(5)->create();
     }
 }

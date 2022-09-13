@@ -243,91 +243,38 @@ return [
         // *****************************
         // ********ROL RRHH*************
         [
-            'header' => 'GESTION PERSONAL',
-            'can' => 'rrhh_grover',
-        ],
-        [
             'text' => 'Trabajadores',
             'route'  => 'trabajador.index',
             'icon' => 'fas fa-users-cog',
-            'can' => 'rrhh_grover',
+            'can' => 'admin_rrhh',
         ],
         [
-            'text'    => 'Personal',
+            'text'    => 'Asignacion de Cargos',
             'icon'    => 'fas fa-folder',
             'submenu' => [
                 [
                     'text' => 'Asignación de Items',
                     'route'  => 'items.lista',
                     'icon' => 'fas fa-folder-open',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                 ],
                 [
                     'text' => 'Asignación de Consultores',
                     'route'  => 'consultores.lista',
                     'icon' => 'fas fa-folder-open',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                 ],
                 [
                     'text' => 'Asignación de Eventuales',
                     'route'  => 'eventuales.lista',
                     'icon' => 'fas fa-folder-open',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                 ],
             ],
             'id' => 'menuPersonal',
-            'can' => 'rrhh_grover',
+            'can' => 'admin_rrhh',
         ],
-        [
-            'text' => 'Nomina de Cargos',
-            'route'  => 'nomina_cargo.index',
-            'icon' => 'fas fa-clipboard',
-            'can' => 'rrhh_grover',
-        ],
-        [
-            'text'    => 'Configuraciones para Cargos',
-            'icon'    => 'fas fa-cogs',
-            'submenu' => [
-                [
-                    'text' => 'Estructura Organizacional',
-                    'route'  => 'estruct_org.index',
-                    'icon' => 'fas fa-folder',
-                    'can' => 'rrhh_grover',
-                    'active' => [
-                        'estructuras-organizacionales',
-                        'estructuras-organizacionales/create'
-                    ],
-                ],
-                [
-                    'text' => 'Escalas Salariales',
-                    'route'  => 'escala_salarial.index',
-                    'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
-                ],
-                [
-                    'text' => 'Unidades Organizacionales',
-                    'route'  => 'unidad_organizacional.index',
-                    'icon' => 'fas fa-sitemap',
-                    'can' => 'rrhh_grover',
-                ],
-                [
-                    'text' => 'Cargos',
-                    'route'  => 'cargo.index',
-                    'icon' => 'fas fa-briefcase',
-                    'can' => 'rrhh_grover',
-                ],
-                [
-                    'text' => 'Tipo de Contrato',
-                    'route'  => 'tipo_contrato.index',
-                    'icon' => 'fas fa-briefcase',
-                    'can' => 'rrhh_grover',
-                ],
 
-            ],
-
-            'can' => 'rrhh_grover',
-            // 'topnav_right'=>true
-        ],
         // Configuraciones para la generacion de Planillas
         [
             'text'    => 'Configuraciones para Planillas',
@@ -337,7 +284,7 @@ return [
                     'text' => 'Configuración Aportes',
                     'route'  => 'conf_aporte.index',
                     'icon' => 'fas fa-cog',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                     // 'shift' =>'ml-4' ,
                     'active' => [
                         'configuracion-aporte',
@@ -348,7 +295,7 @@ return [
                     'text' => 'Configuración Otros Descuentos',
                     'route'  => 'conf_otro_descuento.index',
                     'icon' => 'fas fa-cog',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                     'active' => [
                         'configuracion-otro-descuento',
                         'configuracion-otro-descuento/create'
@@ -358,7 +305,7 @@ return [
                     'text' => 'Configuración Impositiva',
                     'route'  => 'conf_impositiva.index',
                     'icon' => 'fas fa-cog',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                     // 'shift' =>'ml-4' ,
                     'active' => [
                         'configuracion-impositiva',
@@ -369,7 +316,7 @@ return [
                     'text' => 'Configuración Bono Antiguedad',
                     'route'  => 'conf_bono_antiguedad.index',
                     'icon' => 'fas fa-cog',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                     // 'shift' =>'ml-4' ,
                     'active' => [
                         'configuracion-bono-antiguedad',
@@ -380,16 +327,26 @@ return [
                     'text' => 'Configuración Horas Extras',
                     'route'  => 'conf_horas_extra.index',
                     'icon' => 'fas fa-cog',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
                     'active' => [
                         'configuracion-hora-extra',
                         'configuracion-hora-extra/create'
                     ],
                 ],
+                [
+                    'text' => 'Configuración Descuentos',
+                    'route'  => 'conf_descuento.index',
+                    'icon' => 'fas fa-cog',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'configuracion-descuentos',
+                        'configuracion-descuentos/create'
+                    ],
+                ],
 
             ],
 
-            'can' => 'rrhh_grover',
+            'can' => 'admin_rrhh',
             'topnav_right' => true
         ],
         // Configuraciones para la generacion de Planillas
@@ -401,35 +358,165 @@ return [
                     'text' => 'Planilla Asistencias',
                     'route'  => 'asistencia.consulta',
                     'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/asistencias',
+                    ],
                 ],
                 [
                     'text' => 'Planilla Bonos de Antiguedad',
                     'route'  => 'bono_antiguedad.consulta',
                     'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/bono_antiguedads',
+                    ],
                 ],
                 [
                     'text' => 'Planilla Horas Extras',
                     'route'  => 'horas_extra.consulta',
                     'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/horas_extras',
+                    ],
                 ],
                 [
                     'text' => 'Planilla Suplencias',
                     'route'  => 'suplencia.consulta',
                     'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/suplencias',
+                    ],
                 ],
                 [
                     'text' => 'Planilla Total Ganado',
                     'route'  => 'total_ganado.consulta',
                     'icon' => 'fas fa-clipboard',
-                    'can' => 'rrhh_grover',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/total_ganados',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Aportes Laborales',
+                    'route'  => 'aporte_laboral.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/aporte_laborals',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Refrigerios',
+                    'route'  => 'refrigerio.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/refrigerios',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Impositiva',
+                    'route'  => 'impositiva.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/impositivas',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Otros descuentos',
+                    'route'  => 'otro_descuento.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/otro_descuentos',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Fondo Empleados',
+                    'route'  => 'fondo_empleado.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/fondo_empleados',
+                    ],
+                ],
+                [
+                    'text' => 'Planilla Descuentos',
+                    'route'  => 'descuento.consulta',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/descuentos',
+                    ],
+                ],
+
+                [
+                    'text' => 'Planilla General',
+                    'route'  => 'nombre_planilla.index',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'planilla/nombre_planilla',
+                    ],
                 ],
             ],
 
-            'can' => 'rrhh_grover',
+            'can' => 'admin_rrhh',
+        ],
+
+        [
+            'text' => 'Nomina de Cargos',
+            'route'  => 'nomina_cargo.index',
+            'icon' => 'fas fa-clipboard',
+            'can' => 'admin_rrhh',
+        ],
+        [
+            'text'    => 'Configuraciones para Cargos',
+            'icon'    => 'fas fa-cogs',
+            'submenu' => [
+                [
+                    'text' => 'Estructura Organizacional',
+                    'route'  => 'estruct_org.index',
+                    'icon' => 'fas fa-folder',
+                    'can' => 'admin_rrhh',
+                    'active' => [
+                        'estructuras-organizacionales',
+                        'estructuras-organizacionales/create'
+                    ],
+                ],
+                [
+                    'text' => 'Escalas Salariales',
+                    'route'  => 'escala_salarial.index',
+                    'icon' => 'fas fa-clipboard',
+                    'can' => 'admin_rrhh',
+                ],
+                [
+                    'text' => 'Unidades Organizacionales',
+                    'route'  => 'unidad_organizacional.index',
+                    'icon' => 'fas fa-sitemap',
+                    'can' => 'admin_rrhh',
+                ],
+                [
+                    'text' => 'Cargos',
+                    'route'  => 'cargo.index',
+                    'icon' => 'fas fa-briefcase',
+                    'can' => 'admin_rrhh',
+                ],
+                [
+                    'text' => 'Tipo de Contrato',
+                    'route'  => 'tipo_contrato.index',
+                    'icon' => 'fas fa-briefcase',
+                    'can' => 'admin_rrhh',
+                ],
+
+            ],
+
+            'can' => 'admin_rrhh',
+            // 'topnav_right'=>true
         ],
         // ***********************************************
     ],

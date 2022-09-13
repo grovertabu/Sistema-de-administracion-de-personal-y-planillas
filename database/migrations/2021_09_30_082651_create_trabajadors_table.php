@@ -26,6 +26,7 @@ class CreateTrabajadorsTable extends Migration
             $table->string('tipo_sangre',40)->nullable();
             $table->string('telefono',40)->nullable();
             $table->string('celular',40)->nullable();
+            $table->string('profesion',150)->nullable();
             $table->string('estado_civil',50)->default('NONE');
             $table->string('sexo', 1);
             $table->string('nacionalidad',40);

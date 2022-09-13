@@ -105,6 +105,7 @@ $(()=>{
         formData.append('tipo_sangre',$('#tipo_sangre').val());
         formData.append('telefono',$('#telefono').val());
         formData.append('celular',$('#celular').val());
+        formData.append('profesion',$('#profesion').val());
         formData.append('estado_civil',$('#estado_civil').val());
         formData.append('sexo',$('#sexo').val());
         formData.append('nacionalidad',$('#nacionalidad').val());

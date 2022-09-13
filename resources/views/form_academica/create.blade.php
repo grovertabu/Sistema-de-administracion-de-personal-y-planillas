@@ -11,7 +11,6 @@
                     @csrf
                     <div class="row">
                         <input type="hidden" name="trabajador_id" id="trabajador_id" value="{{$trabajador->id}}">
-                        <input type="hidden" name="created_by" id="created_by" value="{{auth()->user()->name}}">
                         <x-dg-select2 id="nivel_formacion" name="nivel_formacion" label="Nivel" topclass="col-md-12 required">
                             <x-dg-option value="">--SELECCIONE--</x-dg-option>
                             <x-dg-option value="PRIMARIA">PRIMARIA</x-dg-option>
@@ -20,19 +19,19 @@
                             <x-dg-option value="EGRESADO">EGRESADO</x-dg-option>
                             <x-dg-option value="TÉCNICO MEDIO">TÉCNICO MEDIO</x-dg-option>
                             <x-dg-option value="TÉCNICO SUPERIOR">TÉCNICO SUPERIOR</x-dg-option>
-                            <x-dg-option value="PROFESIONAL">PROFESIONAL</x-dg-option>
+                            <x-dg-option value="PROFESIONAL">PROFESIONAL U OFICIO</x-dg-option>
                             <x-dg-option value="DIPLOMADO">DIPLOMADO</x-dg-option>
                             <x-dg-option value="ESPECIALIDAD">ESPECIALIDAD</x-dg-option>
                             <x-dg-option value="MAESTRIA">MAESTRIA</x-dg-option>
                             <x-dg-option value="DOCTORADO">DOCTORADO</x-dg-option>
                         </x-dg-select2>
-                        <x-dg-input type="text" name="institucion" id="institucion"
-                            label="Institución" topclass="col-md-12 required"
+                        <x-input type="text" name="institucion" id="institucion"
+                            label="Institución" topclass="col-md-12 required" inputclass="text-uppercase"
                             placeholder="Ejemplo: Universidad San Francisco Xavier de Chuquisaca"/>
-                        <x-dg-input type="text" name="titulo_formacion" id="titulo_formacion"
+                        <x-input type="text" name="titulo_formacion" id="titulo_formacion"
                             label="Título obtenido" topclass="col-md-12 required"
                             placeholder="Ejemplo: LICENCIADO EN CONTADURÍA PÚBLICA"/>
-                        <x-dg-input type="text" name="lugar_formacion" id="lugar_formacion"
+                        <x-input type="text" name="lugar_formacion" id="lugar_formacion"
                             label="Lugar" topclass="col-md-6 required"
                             placeholder="Ejemplo: Sucre - Bolivia"/>
                         <x-date-icon id="fecha_emision"  name="fecha_emision"

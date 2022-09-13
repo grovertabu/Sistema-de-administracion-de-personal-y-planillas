@@ -2,7 +2,7 @@
     @section('css')
     @parent
     {{-- <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/b-print-1.6.1/datatables.min.css" /> --}}
-    <style>.printer table{counter-reset: rowNumber}.printer tr{counter-increment: rowNumber}.printer tr td:first-child::before{content: counter(rowNumber);min-width: 1em;margin-right: 0.5em} div.dt-buttons.btn-group.flex-wrap {float:right}</style>
+    <style>.printer table{counter-reset: rowNumber}.printer tr{counter-increment: rowNumber}.printer tr td:first-child::before{content: counter(rowNumber);min-width: 1em;margin-right: 0.5em} </style>
     @endsection
 
 @endif

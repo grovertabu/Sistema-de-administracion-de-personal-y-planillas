@@ -1,10 +1,11 @@
 $(()=>{
     //  tabla configuracion de aportes
     table_conf_otro_descuento = $('#table_conf_otro_descuento').DataTable({
-        autoWidth: false,
         responsive: true,
-        scrollY: '45vh',
+        scrollY: '50vh',
         scrollX: true,
+        deferRender: true,
+        autoWidth: true,
         pagingType: "full_numbers",
         language: {
             url:"../../vendor/funciones/datatable_spanish.json"

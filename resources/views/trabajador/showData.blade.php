@@ -46,18 +46,18 @@
             </div>
             <div class="tab-pane fade" id="info_laboral" role="tabpanel">
                 <div class="row">
-                    <x-input type="number" name="antiguedad_anios" id="antiguedad_anios" disabled
-                        label="AÑOS DE ANTIGUEDAD" topclass="col-md-4"
-                        value="{{ $trabajador->antiguedad_anios }}" />
-                    <x-input type="number" name="antiguedad_meses" id="antiguedad_meses" label="MESES DE ANTIGUEDAD"
-                        topclass="col-md-4" value="{{ $trabajador->antiguedad_meses }}" disabled />
-                    <x-input type="number" name="antiguedad_dias" id="antiguedad_dias" label="DIAS DE ANTIGUEDAD"
-                        topclass="col-md-4" value="{{ $trabajador->antiguedad_dias }}" disabled />
+                    <x-input type="text" name="antiguedad_anios" id="antiguedad_anios" disabled
+                        label="Antiguedad Otras Instituciónes" topclass="col-md-12"
+                        value="{{ Funciones::fecha_text($trabajador->antiguedad_anios, $trabajador->antiguedad_meses, $trabajador->antiguedad_dias) }}" />
                     <x-input type="text" label="Estado civil" topclass="col-md-6" disabled
-                        value="{{ Funciones::estadoCivil($trabajador->sexo,$trabajador->estado_civil) }}"
+                        value="{{ mb_strtoupper(Funciones::estadoCivil($trabajador->sexo,$trabajador->estado_civil)) }}"
                         inputclass="form-control-sm" />
                     <x-input-icon type="text" name="estado" id="estado" label="ESTADO" topclass="col-md-6"
                         icon="fas fa-check" disabled value="{{ $trabajador->estado_trabajador }}"
+                        inputclass="form-control-sm" />
+
+                    <x-input type="text" label="Profesión" topclass="col-md-12" disabled
+                        value="{{ $trabajador->profesion }}"
                         inputclass="form-control-sm" />
 
                 </div>

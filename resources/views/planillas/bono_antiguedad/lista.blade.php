@@ -44,14 +44,14 @@
                         @endphp
                         @foreach ($lista_bono_antiguedad as $bono_antiguedad)
                             <tr>
-                                <td>{{$i++}}</td>
+                                <td>{{$bono_antiguedad->item}}</td>
                                 <td>{{ mb_strtoupper($bono_antiguedad->nombre_completo) }}</td>
-                                <td>{{ $bono_antiguedad->anios_arrastre}}AÑOS<br/>{{$bono_antiguedad->meses_arrastre}}MESES<br/>{{$bono_antiguedad->dias_arrastre }}DÍAS</td>
+                                <td>{{ $bono_antiguedad->anios_arrastre}} AÑOS<br/>{{$bono_antiguedad->meses_arrastre}} MESES<br/>{{$bono_antiguedad->dias_arrastre }} DÍAS</td>
                                 <td>{{ $bono_antiguedad->fecha_ingreso->format('d-m-Y') }}</td>
                                 <td>{{ $bono_antiguedad->fecha_calculo->format('d-m-Y') }}</td>
-                                <td>{{ $bono_antiguedad->anios_actual}}AÑOS<br/>{{$bono_antiguedad->meses_actual}}MESES<br/>{{$bono_antiguedad->dias_actual }}DÍAS</td>
+                                <td>{{ $bono_antiguedad->anios_actual}} AÑOS<br/>{{$bono_antiguedad->meses_actual}} MESES<br/>{{$bono_antiguedad->dias_actual }} DÍAS</td>
                                 <td>{{ $bono_antiguedad->porcentaje }}</td>
-                                <td>{{ formatNumber($bono_antiguedad->monto) }}</td>
+                                <td>{{ Funciones::formatMoney($bono_antiguedad->monto) }}</td>
                                 <td>
                                     <a href="{{ route('bono_antiguedad.editar', $bono_antiguedad->id) }}" title='editar'
                                         class='btn btn-warning btn-icon btn-sm'> <i class="fas fa-edit"></i></a>

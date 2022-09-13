@@ -13,21 +13,21 @@
 <div class="card card-info card-outline">
     <div class="card-body sinpadding">
         <div class="table table-bordered table-hover dataTable table-responsive">
-            <table class="table table-bordered display nowrap datatable data_table" id="table_conf_otro_descuento">
+            <table width="100%" class="table table-striped table-bordered datatable data_table " id="table_conf_otro_descuento">
                 <thead >
                     <tr>
-                        <th width="5%">#</th>
-                        <th width="35%">Descripción</th>
+                        <th >#</th>
+                        <th width="620px">Descripción</th>
                         <th >Factor de cálculo</th>
-                        <th width="10%">Estado</th>
-                        <th width="10%"></th>
+                        <th >Estado</th>
+                        <th ></th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
                     @foreach ($conf_otros_descuentos as $conf_otro_descuento)
-                        <tr>
                             <td>{{ $i++ }}</td>
-                            <td>{{ $conf_otro_descuento->descripcion }}</td>>
+                            <td>{{ $conf_otro_descuento->descripcion }}</td>
                             <td>{{ $conf_otro_descuento->factor_calculado }}</td>
                             @if ($conf_otro_descuento->estado == 'HABILITADO')
                                 <td align="center"><span class="badge badge-success">{{ $conf_otro_descuento->estado }}</span></td>

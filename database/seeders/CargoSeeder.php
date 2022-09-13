@@ -797,17 +797,12 @@ class CargoSeeder extends Seeder
             'estado'                       => 'ACTIVO',
         ]);
         Cargo::create([
-            'nombre'                       => mb_strtoupper('Responsable de Activos Fifos'),
+            'nombre'                       => mb_strtoupper('Responsable de Activos Fijos'),
             'estructura_organizacional_id' => '1',
             'estado'                       => 'ACTIVO',
         ]);
         Cargo::create([
-            'nombre'                       => mb_strtoupper('Archivo- Biblioteca'),
-            'estructura_organizacional_id' => '1',
-            'estado'                       => 'ACTIVO',
-        ]);
-        Cargo::create([
-            'nombre'                       => mb_strtoupper('Portero Oficina Central'),
+            'nombre'                       => mb_strtoupper('Archivo Biblioteca'),
             'estructura_organizacional_id' => '1',
             'estado'                       => 'ACTIVO',
         ]);
@@ -1016,10 +1011,11 @@ class CargoSeeder extends Seeder
             'estructura_organizacional_id' => '1',
             'estado'                       => 'ACTIVO',
         ]);
-        Cargo::create([
-            'nombre'                       => mb_strtoupper('SOPORTE DE SISTEMAS'),
-            'estructura_organizacional_id' => '1',
-            'estado'                       => 'ACTIVO',
-        ]);
+
+        // Cargo::create([
+        //     'nombre'                       => mb_strtoupper('SOPORTE DE SISTEMAS'),
+        //     'estructura_organizacional_id' => '1',
+        //     'estado'                       => 'ACTIVO',
+        // ]);
     }
 }

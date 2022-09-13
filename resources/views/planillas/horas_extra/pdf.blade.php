@@ -34,9 +34,9 @@ if ($horas_extras->count() > 0) {
             $pdf->MultiCell(15, 6, 'ITEM', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
             $pdf->MultiCell(57, 6, 'CARGO', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
             $pdf->MultiCell(52, 6, 'TRABAJADOR', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
-            $pdf->MultiCell(35, 6, 'SALARIO', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
-            $pdf->MultiCell(35, 6, 'HORAS EXTRAS', 1, 'C', 1, 1, '', '', 1, '', '', '', 6, 'M');
-            $pdf->MultiCell(35, 6, 'MONTO', 1, 'C', 1, 1, '', '', 1, '', '', '', 6, 'M');
+            $pdf->MultiCell(25, 6, 'SALARIO', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
+            $pdf->MultiCell(20, 6, 'HORAS EXTRAS', 1, 'C', 1, '', '', '', 1, '', '', '', 6, 'M');
+            $pdf->MultiCell(25, 6, 'MONTO', 1, 'C', 1, 1, '', '', 1, '', '', '', 6, 'M');
         }
         $pdf->SetFont('dejavusans', '', 6);
         $pdf->SetFillColor(220, 220, 220);
